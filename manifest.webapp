@@ -1,0 +1,15 @@
+{
+    "version": "0.0.1",
+    "name": "spiskammers",
+    "description": "Hold orden på spiskammerset ditt.",
+    "launch_path": "/index.html",
+    "developer": {
+        "name": "Martin Severin Steffensen",
+        "url": "http://localhost:5173"
+    },
+    "permissions": {
+        "desktop-notification": {
+            "description": "Needed for creating system notifications."
+        }
+    }
+}

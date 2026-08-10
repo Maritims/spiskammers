@@ -1,0 +1,17 @@
+{
+  "name": "spiskammers",
+  "version": "0.0.1",
+  "description": "Hold styr på hva du har i matboden på en enkel måte.",
+  "private": true,
+  "keywords": [
+    ""
+  ],
+  "license": "MIT",
+  "author": "Martin Severin Steffensen",
+  "scripts": {
+    "dev": "vite dev"
+  },
+  "devDependencies": {
+    "vite": "^8.2.1"
+  }
+}

@@ -1,0 +1,40 @@
+:host {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block-end: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.name {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.quantity {
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.checkout-btn {
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+
+    background-color: #f9f9f9;
+    border-radius: 4px;
+
+    &:active {
+        background-color: #eaeaea;
+    }
+}
