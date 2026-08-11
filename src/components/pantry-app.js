@@ -1,9 +1,19 @@
+import './pantry-filter';
+import './pantry-toast';
 import './pantry-list';
 import './pantry-fab';
 import './pantry-checkin-dialog';
 import './pantry-product-fab';
 import './pantry-product-dialog';
-import {addPantryItem, addProduct, decrementPantryItemPackageQuantity, getPantryItems} from "../db";
+import {
+    addPantryItem,
+    addProduct,
+    decrementPantryItemPackageQuantity,
+    deleteProduct,
+    getAllProducts,
+    getPantryItems,
+    updateProduct
+} from "../db";
 import commonStyles from '../styles/stylesheet.css?inline';
 import componentStyles from './pantry-app.css?inline';
 
@@ -12,6 +22,7 @@ export class PantryApp extends HTMLElement {
         super();
         this.attachShadow({mode: 'open'});
         this.items = [];
+        this.products = [];
     }
 
     async connectedCallback() {
@@ -23,11 +34,15 @@ export class PantryApp extends HTMLElement {
             await decrementPantryItemPackageQuantity(id, amount);
             await this.loadItems();
             this.updateList();
+
+            this.notify('Item checked out', 'success', 3000);
         });
 
-        this.shadowRoot.addEventListener('fab-click', () => {
+        this.shadowRoot.addEventListener('fab-click', async () => {
+            await this.loadProducts();
             const dialog = this.shadowRoot.querySelector('pantry-checkin-dialog');
             if (dialog) {
+                dialog.products = this.products;
                 dialog.open();
             }
         });
@@ -44,12 +59,44 @@ export class PantryApp extends HTMLElement {
             await addPantryItem(newItem);
             await this.loadItems();
             this.updateList();
+
+            this.notify('Item checked in', 'success', 3000);
         });
 
         this.shadowRoot.addEventListener('product-create', async (event) => {
             const newProduct = event.detail;
             await addProduct(newProduct);
+
+            this.notify('Product added', 'success', 3000);
         });
+
+        this.shadowRoot.addEventListener('product-update', async (event) => {
+            const updatedProduct = event.detail;
+            await updateProduct(updatedProduct);
+
+            this.notify('Product updated', 'success', 3000);
+        });
+
+        this.shadowRoot.addEventListener('product-delete', async (event) => {
+            const ean = event.detail.ean;
+            await deleteProduct(ean);
+
+            this.notify('Product deleted', 'success', 3000);
+        });
+
+        this.shadowRoot.addEventListener('category-filter', async (event) => {
+            const { categories } = event.detail;
+            const listEl = this.shadowRoot.querySelector('pantry-list');
+            if (listEl) {
+                listEl.filter = categories;
+            }
+        });
+    }
+
+    notify(message, type = 'success', duration) {
+        window.dispatchEvent(new CustomEvent('toast-show', {
+            detail: {message, type, duration}
+        }));
     }
 
     async loadItems() {
@@ -60,10 +107,24 @@ export class PantryApp extends HTMLElement {
         }
     }
 
+    async loadProducts() {
+        try {
+            this.products = await getAllProducts();
+        } catch (error) {
+            console.error('Error loading products:', error);
+        }
+    }
+
     updateList() {
         const listEl = this.shadowRoot.querySelector('pantry-list');
+        const filterEl = this.shadowRoot.querySelector('pantry-filter');
+
         if(listEl) {
             listEl.items = this.items;
+        }
+
+        if (filterEl) {
+            filterEl.categories = [...new Set(this.items.map(item => item.category).filter(Boolean))];
         }
     }
 
@@ -77,12 +138,14 @@ export class PantryApp extends HTMLElement {
             <h1>Pantry</h1>
         </header>
         <main>
+            <pantry-filter></pantry-filter>
             <pantry-list></pantry-list>
         </main>
         <pantry-fab></pantry-fab>
         <pantry-product-fab></pantry-product-fab>
         <pantry-checkin-dialog></pantry-checkin-dialog>
         <pantry-product-dialog></pantry-product-dialog>
+        <pantry-toast></pantry-toast>
         `;
         this.updateList();
     }

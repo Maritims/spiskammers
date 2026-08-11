@@ -1,5 +1,7 @@
 :host {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--base-size);
     justify-content: space-between;
     align-items: center;
     padding-block-end: 1rem;
@@ -25,16 +27,4 @@
 .actions {
     display: flex;
     gap: 0.5rem;
-}
-
-.checkout-btn {
-    padding: 0.5rem 0.75rem;
-    cursor: pointer;
-
-    background-color: #f9f9f9;
-    border-radius: 4px;
-
-    &:active {
-        background-color: #eaeaea;
-    }
 }

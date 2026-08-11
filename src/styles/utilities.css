@@ -1,0 +1,11 @@
+.position-fixed {
+    position: fixed;
+}
+
+.bottom {
+    bottom: var(--base-size);
+}
+
+.right {
+    right: var(--base-size);
+}

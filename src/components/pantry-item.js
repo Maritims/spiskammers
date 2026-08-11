@@ -50,8 +50,8 @@ export class PantryItem extends HTMLElement {
                 <span class="quantity">${totalQuantity} ${baseUnit} (${packageQuantity} ${packageUnit})</span>
             </div>
             <div class="actions">
-                <button class="btn btn-secondary checkout-btn" data-amount="1">-1</button>
-                <button class="btn btn-secondary checkout-btn" data-amount="2">-2</button>
+                <button class="btn btn-square btn-primary checkout-btn" data-amount="1">-1</button>
+                <button class="btn btn-square btn-primary checkout-btn" data-amount="2">-2</button>
             </div>
         `;
     }

@@ -1,51 +1,90 @@
 .btn {
-    padding: 0.5rem 0.75rem;
-    border: none;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid transparent;
+    border-radius: var(--space-xxs);
+    cursor: pointer;
+    padding-block: var(--padding-btn-block);
+    padding-inline: var(--padding-btn-inline);
 }
 
 .btn-primary {
     background-color: var(--color-primary);
-    color: var(--color-surface);
-}
+    color: var(--color-primary-text);
 
-.btn-primary:active {
-    background-color: var(--color-primary-hover);
+    &:hover {
+        background-color: var(--color-primary-hover);
+    }
 }
 
 .btn-secondary {
-    border: 1px solid var(--color-secondary-border);
     background-color: var(--color-secondary);
-    color: var(--color-text-main);
+    color: var(--color-secondary-text);
 
-    &:active {
+    &:hover {
         background-color: var(--color-secondary-hover);
     }
+}
+
+.btn-success {
+    background-color: var(--color-success);
+    color: var(--color-success-text);
+
+    &:hover {
+        background-color: var(--color-success-hover);
+    }
+}
+
+.btn-warning {
+    background-color: var(--color-warning);
+    color: var(--color-warning-text);
+
+    &:hover {
+        background-color: var(--color-warning-hover);
+    }
+}
+
+.btn-danger {
+    background-color: var(--color-danger);
+    color: var(--color-danger-text);
+
+    &:active {
+        background-color: var(--color-danger-hover);
+    }
+}
+
+.btn-info {
+    background-color: var(--color-info);
+    color: var(--color-info-text);
+
+    &:hover {
+        background-color: var(--color-info-hover);
+    }
+}
+
+.btn-square {
+    padding: calc(var(--base-size) * 1.25);
+    aspect-ratio: 1 / 1;
+}
+
+.btn-circle {
+    width: var(--base-size);
+    height: var(--base-size);
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+}
+
+.btn-circle-lg {
+    width: calc(var(--base-size) * 4);
+    height: calc(var(--base-size) * 4);
+    font-size: var(--font-size-lg);
 }
 
 .btn-fab {
     position: fixed;
     bottom: 1.5rem;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 50%;
-    border: none;
-    background-color: #2563eb;
-    color: white;
-    font-size: 1.5rem;
-    cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:active {
-        background-color: #1d4ed8;
-    }
 }
 
 .btn-fab-center {
@@ -55,10 +94,4 @@
 
 .btn-fab-right {
     right: 1.5rem;
-
-    background-color: var(--color-text-main);
-
-    &:active {
-        background-color: var(--color-text-muted);
-    }
 }

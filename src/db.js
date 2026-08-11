@@ -25,55 +25,67 @@ export function openDB() {
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
             if (!db.objectStoreNames.contains(PANTRY_STORE_NAME)) {
-                const store = db.createObjectStore(PANTRY_STORE_NAME, {keyPath: 'id', autoIncrement: true});
-                store.createIndex('name', 'name', {unique: false});
+                const pantryStore = db.createObjectStore(PANTRY_STORE_NAME, {keyPath: 'id', autoIncrement: true});
+                pantryStore.createIndex('name', 'name', {unique: false});
 
-                store.transaction.oncomplete = () => {
-                    const seedStore = db.transaction(PANTRY_STORE_NAME, 'readwrite').objectStore(PANTRY_STORE_NAME);
-                    const initialItems = [{
-                        name: 'Oats',
-                        packageQuantity: 2,
-                        packageUnit: 'bag(s)',
-                        baseQuantity: 1,
-                        baseUnit: 'kg'
-                    }, {
-                        name: 'Olive oil',
-                        packageQuantity: 1,
-                        packageUnit: 'bottle(s)',
-                        baseQuantity: 500,
-                        baseUnit: 'ml'
-                    }, {
-                        name: 'Butter',
-                        packageQuantity: 4,
-                        packageUnit: 'package(s)',
-                        baseQuantity: 1,
-                        baseUnit: 'kg'
-                    }, {
-                        name: 'Milk',
-                        packageQuantity: 6,
-                        packageUnit: 'carton(s)',
-                        baseQuantity: 1,
-                        baseUnit: 'l'
-                    }];
-                    initialItems.forEach(item => seedStore.add(item));
-                };
+                const initialItems = [{
+                    name: 'Oats',
+                    category: 'Grains',
+                    packageQuantity: 2,
+                    packageUnit: 'bag(s)',
+                    baseQuantity: 1,
+                    baseUnit: 'kg'
+                }, {
+                    name: 'Olive oil',
+                    category: 'Oils',
+                    packageQuantity: 1,
+                    packageUnit: 'bottle(s)',
+                    baseQuantity: 500,
+                    baseUnit: 'ml'
+                }, {
+                    name: 'Butter',
+                    category: 'Dairy',
+                    packageQuantity: 4,
+                    packageUnit: 'package(s)',
+                    baseQuantity: 1,
+                    baseUnit: 'kg'
+                }, {
+                    name: 'Milk',
+                    category: 'Dairy',
+                    packageQuantity: 6,
+                    packageUnit: 'carton(s)',
+                    baseQuantity: 1,
+                    baseUnit: 'l'
+                }, {
+                    name: 'Apples',
+                    category: 'Fruits',
+                    packageQuantity: 6,
+                    packageUnit: 'package(s)',
+                    baseQuantity: 1,
+                    baseUnit: 'kg'
+                }, {
+                    name: 'Broccoli',
+                    category: 'Vegetables',
+                    packageQuantity: 1,
+                    packageUnit: 'package(s)',
+                    baseQuantity: 1,
+                    baseUnit: 'kg'
+                }];
+                initialItems.forEach(item => pantryStore.add(item));
             }
 
             if(!db.objectStoreNames.contains(PRODUCT_STORE_NAME)) {
                 const productStore = db.createObjectStore(PRODUCT_STORE_NAME, {keyPath: 'id', autoIncrement: true});
                 productStore.createIndex('name', 'name', {unique: true});
 
-                productStore.transaction.oncomplete = () => {
-                    const seedProducts = db.transaction(PRODUCT_STORE_NAME, 'readwrite').objectStore(PRODUCT_STORE_NAME);
-                    const initialProducts = [{
-                        ean: '7038010000065',
-                        name: 'TINE Helmelk 3,5 % fett 1 liter',
-                        packageUnit: 'carton',
-                        baseQuantity: 1.75,
-                        baseUnit: 'l'
-                    }];
-                    initialProducts.forEach(product => seedProducts.add(product));
-                }
+                const initialItems = [{
+                    ean: '7038010000065',
+                    name: 'TINE Helmelk 3,5 % fett 1 liter',
+                    packageUnit: 'carton',
+                    baseQuantity: 1.75,
+                    baseUnit: 'l'
+                }];
+                initialItems.forEach(product => productStore.add(product));
             }
         };
 
@@ -99,23 +111,33 @@ export async function addPantryItem(item) {
     return new Promise((resolve, reject) => {
         const transaction = db.transaction(PANTRY_STORE_NAME, 'readwrite');
         const store = transaction.objectStore(PANTRY_STORE_NAME);
-        const request = store.add(item);
+        const request = store.getAll();
 
-        request.onsuccess = (event) => resolve(event.target.result);
+        request.onsuccess = (event) => {
+            const items = event.target.result;
+            let existing = null;
+
+            if (item.ean) {
+                existing = items.find(i => i.ean === item.ean);
+            } else {
+                existing = items.find(i => i.name.trim().toLowerCase() === item.name.trim().toLowerCase());
+            }
+
+            if (existing) {
+                existing.packageQuantity += Number(existing.packageQuantity) + Number(item.packageQuantity);
+
+                const updateRequest = store.put(existing);
+                updateRequest.onsuccess = () => resolve(existing.id);
+                updateRequest.onerror = (event) => reject(event.target.error);
+            } else {
+                const addRequest = store.add(item);
+                addRequest.onsuccess = (event) => resolve(event.target.result);
+                addRequest.onerror = (event) => reject(event.target.error);
+            }
+        };
+
         request.onerror = (event) => reject(event.target.error);
     })
-}
-
-export async function addProduct(product) {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-        const transaction = db.transaction(PRODUCT_STORE_NAME, 'readwrite');
-        const store = transaction.objectStore(PRODUCT_STORE_NAME);
-        const request = store.add(product);
-
-        request.onsuccess = (event) => resolve(event.target.result);
-        request.onerror = (event) => reject(event.target.error);
-    });
 }
 
 export async function decrementPantryItemPackageQuantity(id, amount = 1) {
@@ -143,12 +165,60 @@ export async function decrementPantryItemPackageQuantity(id, amount = 1) {
     });
 }
 
+export async function addProduct(product) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(PRODUCT_STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(PRODUCT_STORE_NAME);
+        const request = store.add(product);
+
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => reject(event.target.error);
+    });
+}
+
+export async function updateProduct(product) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(PRODUCT_STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(PRODUCT_STORE_NAME);
+        const request = store.put(product);
+
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => reject(event.target.error);
+    });
+}
+
+export async function deleteProduct(id) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(PRODUCT_STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(PRODUCT_STORE_NAME);
+        const request = store.delete(Number(id));
+
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => reject(event.target.error);
+    });
+}
+
 export async function getProductByEAN(ean) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
         const transaction = db.transaction(PRODUCT_STORE_NAME, 'readonly');
         const store = transaction.objectStore(PRODUCT_STORE_NAME);
         const request = store.get(Number(ean));
+
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => reject(event.target.error);
+    });
+}
+
+export async function getAllProducts() {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(PRODUCT_STORE_NAME, 'readonly');
+        const store = transaction.objectStore(PRODUCT_STORE_NAME);
+        const request = store.getAll();
 
         request.onsuccess = (event) => resolve(event.target.result);
         request.onerror = (event) => reject(event.target.error);

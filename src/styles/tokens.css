@@ -1,15 +1,68 @@
 :host, :root {
+    --base-size: 1rem;
+
+    /* region SPACING TOKENS */
+    --space-xxs: calc(var(--base-size) * 0.25);
+    --space-xs: calc(var(--base-size) * 0.5);
+    --space-sm: calc(var(--base-size) * 0.75);
+    --space-md: var(--base-size);
+    --space-lg: calc(var(--base-size) * 1.5);
+    --space-xl: calc(var(--base-size) * 2);
+    --space-xxl: calc(var(--base-size) * 3);
+    /* endregion */
+
+    /* region FONT SIZES */
+    --font-size-xs: calc(var(--base-size) * 0.875);
+    --font-size-sm: var(--base-size);
+    --font-size-md: calc(var(--base-size) * 1.25);
+    --font-size-lg: calc(var(--base-size) * 1.5);
+    --font-size-xl: calc(var(--base-size) * 2);
+    /* endregion */
+
+    /* region BUTTONS */
+    --padding-btn-block: var(--space-xs);
+    --padding-btn-inline: var(--space-md);
+    /* endregion */
+
+    /* region INPUTS */
+    --padding-input-block: var(--space-sm);
+    --padding-input-inline: var(--space-md);
+    /* endregion */
+
     --color-primary: #2563eb;
     --color-primary-hover: #1d4ed8;
+    --color-primary-text: #fff;
 
-    --color-secondary: #f9f9f9;
-    --color-secondary-hover: #e5e7eb;
-    --color-secondary-border: #ccc;
+    --color-secondary: #475569;
+    --color-secondary-hover: #334155;
+    --color-secondary-text: #fff;
 
-    --color-surface: #ffffff;
-    --color-text-main: #111827;
-    --color-text-muted: #4b5563;
-    --color-border: #d1d5db;
+    --color-bg: #f8fafc;
+    --color-surface: #fff;
+    --color-text-main: #0f172a;
+    --color-text-muted: #64748b;
+    --color-border: #e2e8f0;
+
+    --color-success: #16a34a;
+    --color-success-hover: #15803d;
+    --color-success-text: #fff;
+    --color-success-bg: #dcfce7;
+
+    --color-warning: #ca8a04;
+    --color-warning-hover: #a16207;
+    --color-warning-text: #fff;
+    --color-warning-bg: #fef9c3;
+
+    --color-danger: #dc2626;
+    --color-danger-hover: #b91c1c;
+    --color-danger-text: #fff;
+    --color-danger-bg: #fee2e2;
+
+    --color-info: #0284c7;
+    --color-info-hover: #0369a1;
+    --color-info-text: #fff;
+    --color-info-bg: #e0f2fe;
+
     --color-dialog-backdrop: rgba(0, 0, 0, 0.5);
 
     --radius-sm: 4px;
@@ -20,4 +73,9 @@
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
 
     --font-family: system-ui, -apple-system, sans-serif;
+}
+
+:host {
+    font-family: var(--font-family);
+    font-size: var(--font-size-md);
 }

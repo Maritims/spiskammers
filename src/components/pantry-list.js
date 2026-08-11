@@ -6,10 +6,16 @@ export class PantryList extends HTMLElement {
         super();
         this.attachShadow({mode: 'open'});
         this._items = [];
+        this._filters = [];
     }
 
     set items(val) {
-        this._items = val;
+        this._items = val || [];
+        this.render();
+    }
+
+    set filter(val) {
+        this._filters = val || [];
         this.render();
     }
 
@@ -22,12 +28,14 @@ export class PantryList extends HTMLElement {
     }
 
     render() {
+        const filteredItems = this._filters.length === 0 ? this._items : this._items.filter(item => this._filters.includes(item.category));
+
         this.shadowRoot.innerHTML = `
         <style>${styles}</style>
         ${this._items.length === 0 ?
-            `<div class="empty">Your pantry is completely empty!</div>`
+            `<div class="empty">No items found.</div>`
             :
-            this._items.map(item => `
+            filteredItems.map(item => `
                 <pantry-item
                     item-id="${item.id}"
                     name="${item.name}"

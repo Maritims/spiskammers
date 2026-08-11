@@ -1,32 +1,33 @@
 form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    padding: 1.5rem;
+    gap: var(--space-md);
+    padding: var(--space-lg);
 
     .field {
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
+        gap: var(--space-xxs);
     }
 
     .actions {
         display: flex;
         justify-content: flex-end;
-        gap: 0.5rem;
-        margin-block-start: 0.5rem;
+        gap: var(--space-xs);
+        margin-block-start: var(--space-xs);
     }
+}
 
-    label {
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
+label {
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+}
 
-    input {
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--color-secondary-border);
-        border-radius: 4px;
-        font-size: 1rem;
-        cursor: pointer;
-    }
+input {
+    padding-block: var(--space-xs);
+    padding-inline: var(--space-md);
+    border: 1px solid var(--color-secondary);
+    border-radius: var(--space-xs);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
 }
