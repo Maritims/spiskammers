@@ -1,0 +1,27 @@
+.scanner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-lg);
+    gap: var(--space-md);
+}
+
+video {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: var(--space-sm);
+    background-color: #000;
+}
+
+.error-msg {
+    color: var(--color-danger);
+    font-size: var(--font-size-xs);
+    text-align: center;
+}
+
+.actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: flex-end;
+}

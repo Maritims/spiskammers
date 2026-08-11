@@ -65,6 +65,13 @@ export class PantryCheckinDialog extends HTMLElement {
                 this.close();
             }
         });
+
+        this.shadowRoot.querySelector('#scan-btn').addEventListener('click', () => {
+            this.dispatchEvent(new CustomEvent('open-scanner', {
+                bubbles: true,
+                composed: true
+            }));
+        })
     }
 
     open() {
@@ -97,6 +104,7 @@ export class PantryCheckinDialog extends HTMLElement {
                     <div class="field">
                         <label for="ean">EAN</label>
                         <input type="text" id="ean" name="ean" list="product-list" placeholder="e.g. 7038010000065" required>
+                        <button type="button" id="scan-btn" class="btn btn-secondary" title="Scan Barcode">📷</button>
                         <datalist id="product-list">${this._products.map(product => `<option value="${product.ean}">${product.name}</option>`).join('')}</datalist>
                     </div>
                     <div class="field">

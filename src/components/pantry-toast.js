@@ -4,13 +4,11 @@ export class PantryToast extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-        this.defaultDuration = 3000;
     }
 
     connectedCallback() {
         this.render();
         window.addEventListener('toast-show', (event) => {
-            console.log('toast-show event received', event.detail);
             const {message, type, duration} = event.detail;
             this.show(message, type, duration);
         });

@@ -1,3 +1,4 @@
+import './pantry-scanner-dialog';
 import './pantry-filter';
 import './pantry-toast';
 import './pantry-list';
@@ -91,6 +92,13 @@ export class PantryApp extends HTMLElement {
                 listEl.filter = categories;
             }
         });
+
+        this.shadowRoot.addEventListener('open-scanner', async (event) => {
+            const scanner = this.shadowRoot.querySelector('pantry-scanner-dialog');
+            if (scanner) {
+                scanner.open();
+            }
+        });
     }
 
     notify(message, type = 'success', duration) {
@@ -144,6 +152,7 @@ export class PantryApp extends HTMLElement {
         <pantry-fab></pantry-fab>
         <pantry-product-fab></pantry-product-fab>
         <pantry-checkin-dialog></pantry-checkin-dialog>
+        <pantry-scanner-dialog></pantry-scanner-dialog>
         <pantry-product-dialog></pantry-product-dialog>
         <pantry-toast></pantry-toast>
         `;
