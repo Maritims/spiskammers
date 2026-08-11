@@ -19,7 +19,7 @@ export class PantryFab extends HTMLElement {
     render() {
         this.shadowRoot.innerHTML = `
             <style>${commonStyles}</style>
-            <button class="btn-fab">+</button>
+            <button class="btn-fab btn-fab-center">+</button>
         `;
     }
 }

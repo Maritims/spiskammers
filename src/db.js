@@ -14,7 +14,8 @@
  */
 
 const DB_NAME = 'pantry_db';
-const STORE_NAME = 'pantry';
+const PANTRY_STORE_NAME = 'pantry';
+const PRODUCT_STORE_NAME = 'products';
 const DB_VERSION = 1;
 
 export function openDB() {
@@ -23,12 +24,12 @@ export function openDB() {
 
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
-            if (!db.objectStoreNames.contains(STORE_NAME)) {
-                const store = db.createObjectStore(STORE_NAME, {keyPath: 'id', autoIncrement: true});
+            if (!db.objectStoreNames.contains(PANTRY_STORE_NAME)) {
+                const store = db.createObjectStore(PANTRY_STORE_NAME, {keyPath: 'id', autoIncrement: true});
                 store.createIndex('name', 'name', {unique: false});
 
                 store.transaction.oncomplete = () => {
-                    const seedStore = db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME);
+                    const seedStore = db.transaction(PANTRY_STORE_NAME, 'readwrite').objectStore(PANTRY_STORE_NAME);
                     const initialItems = [{
                         name: 'Oats',
                         packageQuantity: 2,
@@ -57,6 +58,23 @@ export function openDB() {
                     initialItems.forEach(item => seedStore.add(item));
                 };
             }
+
+            if(!db.objectStoreNames.contains(PRODUCT_STORE_NAME)) {
+                const productStore = db.createObjectStore(PRODUCT_STORE_NAME, {keyPath: 'id', autoIncrement: true});
+                productStore.createIndex('name', 'name', {unique: true});
+
+                productStore.transaction.oncomplete = () => {
+                    const seedProducts = db.transaction(PRODUCT_STORE_NAME, 'readwrite').objectStore(PRODUCT_STORE_NAME);
+                    const initialProducts = [{
+                        ean: '7038010000065',
+                        name: 'TINE Helmelk 3,5 % fett 1 liter',
+                        packageUnit: 'carton',
+                        baseQuantity: 1.75,
+                        baseUnit: 'l'
+                    }];
+                    initialProducts.forEach(product => seedProducts.add(product));
+                }
+            }
         };
 
         request.onsuccess = (event) => resolve(event.target.result);
@@ -67,8 +85,8 @@ export function openDB() {
 export async function getPantryItems() {
     const db = await openDB();
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readonly');
-        const store = transaction.objectStore(STORE_NAME);
+        const transaction = db.transaction(PANTRY_STORE_NAME, 'readonly');
+        const store = transaction.objectStore(PANTRY_STORE_NAME);
         const request = store.getAll();
 
         request.onsuccess = (event) => resolve(event.target.result);
@@ -79,8 +97,8 @@ export async function getPantryItems() {
 export async function addPantryItem(item) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
-        const store = transaction.objectStore(STORE_NAME);
+        const transaction = db.transaction(PANTRY_STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(PANTRY_STORE_NAME);
         const request = store.add(item);
 
         request.onsuccess = (event) => resolve(event.target.result);
@@ -88,11 +106,23 @@ export async function addPantryItem(item) {
     })
 }
 
+export async function addProduct(product) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(PRODUCT_STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(PRODUCT_STORE_NAME);
+        const request = store.add(product);
+
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => reject(event.target.error);
+    });
+}
+
 export async function decrementPantryItemPackageQuantity(id, amount = 1) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
-        const store = transaction.objectStore(STORE_NAME);
+        const transaction = db.transaction(PANTRY_STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(PANTRY_STORE_NAME);
         const getRequest = store.get(Number(id));
 
         getRequest.onsuccess = () => {
@@ -110,5 +140,17 @@ export async function decrementPantryItemPackageQuantity(id, amount = 1) {
             }
         };
         getRequest.onerror = (event) => reject(event.target.error);
+    });
+}
+
+export async function getProductByEAN(ean) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(PRODUCT_STORE_NAME, 'readonly');
+        const store = transaction.objectStore(PRODUCT_STORE_NAME);
+        const request = store.get(Number(ean));
+
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => reject(event.target.error);
     });
 }

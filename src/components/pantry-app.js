@@ -1,7 +1,9 @@
 import './pantry-list';
 import './pantry-fab';
 import './pantry-checkin-dialog';
-import {addPantryItem, decrementPantryItemPackageQuantity, getPantryItems} from "../db";
+import './pantry-product-fab';
+import './pantry-product-dialog';
+import {addPantryItem, addProduct, decrementPantryItemPackageQuantity, getPantryItems} from "../db";
 import commonStyles from '../styles/stylesheet.css?inline';
 import componentStyles from './pantry-app.css?inline';
 
@@ -30,12 +32,24 @@ export class PantryApp extends HTMLElement {
             }
         });
 
+        this.shadowRoot.addEventListener('product-fab-click', () => {
+            const dialog = this.shadowRoot.querySelector('pantry-product-dialog');
+            if (dialog) {
+                dialog.open();
+            }
+        });
+
         this.shadowRoot.addEventListener('item-checkin', async (event) => {
             const newItem = event.detail;
             await addPantryItem(newItem);
             await this.loadItems();
             this.updateList();
-        })
+        });
+
+        this.shadowRoot.addEventListener('product-create', async (event) => {
+            const newProduct = event.detail;
+            await addProduct(newProduct);
+        });
     }
 
     async loadItems() {
@@ -66,7 +80,9 @@ export class PantryApp extends HTMLElement {
             <pantry-list></pantry-list>
         </main>
         <pantry-fab></pantry-fab>
+        <pantry-product-fab></pantry-product-fab>
         <pantry-checkin-dialog></pantry-checkin-dialog>
+        <pantry-product-dialog></pantry-product-dialog>
         `;
         this.updateList();
     }
