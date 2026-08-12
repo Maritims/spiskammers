@@ -93,11 +93,16 @@ export class PantryApp extends HTMLElement {
             }
         });
 
-        this.shadowRoot.addEventListener('open-scanner', async (event) => {
+        this.shadowRoot.addEventListener('open-scanner', async () => {
             const scanner = this.shadowRoot.querySelector('pantry-scanner-dialog');
             if (scanner) {
                 scanner.open();
             }
+        });
+
+        this.shadowRoot.addEventListener('barcode-scanned', async (event) => {
+            const barcode = event.detail;
+            this.shadowRoot.querySelector('pantry-checkin-dialog').setEanValue(barcode);
         });
     }
 

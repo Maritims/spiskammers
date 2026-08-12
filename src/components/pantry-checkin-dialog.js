@@ -16,6 +16,14 @@ export class PantryCheckinDialog extends HTMLElement {
         return this._products;
     }
 
+    setEanValue(ean) {
+        const eanInput = this.shadowRoot.querySelector('input[name="ean"]');
+        if (eanInput) {
+            eanInput.value = ean;
+            eanInput.dispatchEvent(new Event('blur', { bubbles: true}));
+        }
+    }
+
     connectedCallback() {
         this.render();
 
@@ -104,7 +112,6 @@ export class PantryCheckinDialog extends HTMLElement {
                     <div class="field">
                         <label for="ean">EAN</label>
                         <input type="text" id="ean" name="ean" list="product-list" placeholder="e.g. 7038010000065" required>
-                        <button type="button" id="scan-btn" class="btn btn-secondary" title="Scan Barcode">📷</button>
                         <datalist id="product-list">${this._products.map(product => `<option value="${product.ean}">${product.name}</option>`).join('')}</datalist>
                     </div>
                     <div class="field">
@@ -127,9 +134,12 @@ export class PantryCheckinDialog extends HTMLElement {
                         <label for="baseUnit">Base Unit</label>
                         <input type="text" id="baseUnit" name="baseUnit" placeholder="e.g. ml" required>
                     </div>
-                    <div class="actions">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                        <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
+                    <div class="actions justify-content-between">
+                        <button type="button" id="scan-btn" class="btn btn-primary" title="Scan Barcode">📷</button>
+                        <div class="justify-content-flex-end">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
+                        </div>
                     </div>
                 </form>
             </dialog>

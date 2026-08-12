@@ -1,34 +1,39 @@
 import styles from '../styles/stylesheet.css?inline';
 import componentStyles from './pantry-scanner-dialog.css?inline';
+import {startCameraScanner} from "./barcode";
 
 export class PantryScannerDialog extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-        this.stream = null;
-        this.animFrameId = null;
-        this.detector = null;
+        /**
+         *
+         * @type {(() => void) | null}
+         */
+        this.cleanupScanner = null;
+        this._isStarting = false;
     }
 
-    async connectedCallback() {
+    connectedCallback() {
         this.render();
 
-        if('BarcodeDetector' in window) {
-            try {
-                this.detector = new BarcodeDetector({formats: ['code_39', 'codabar', 'ean_13']});
-                console.log('BarcodeDetector API supported');
-            } catch (error) {
-                console.error('BarcodeDetector API not supported:', error);
-            }
-        } else {
-            console.log('BarcodeDetector API not supported in this browser');
+        const dialog = this.shadowRoot.querySelector('dialog');
+        if (dialog) {
+            dialog.addEventListener('cancel', async (event) => {
+                event.preventDefault();
+                await this.close();
+            });
         }
 
-        this.shadowRoot.addEventListener('click', (event) => {
-            if(event.target.classList.contains('close-btn') || event.target.tagName === 'DIALOG') {
-                this.close();
+        this.shadowRoot.addEventListener('click', async (event) => {
+            if (event.target.id === 'cancel-btn' || event.target.tagName === 'DIALOG') {
+                await this.close();
             }
         });
+    }
+
+    async disconnectedCallback() {
+        await this.stopCamera();
     }
 
     async open() {
@@ -39,82 +44,12 @@ export class PantryScannerDialog extends HTMLElement {
         await this.startCamera();
     }
 
-    close() {
-        this.stopCamera();
+    async close() {
+        await this.stopCamera();
         const dialog = this.shadowRoot.querySelector('dialog');
         if (dialog) {
             dialog.close();
         }
-    }
-
-    async startCamera() {
-        const video = this.shadowRoot.querySelector('video');
-        const errorMsgEl = this.shadowRoot.querySelector('.error-msg');
-
-        if(!navigator.mediaDevices?.getUserMedia) {
-            if (errorMsgEl) {
-                errorMsgEl.textContent = 'Camera access is not supported by your browser.';
-                return;
-            }
-        }
-
-        try {
-            this.stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: 'environment'
-                }
-            });
-            video.srcObject = this.stream;
-            await video.play();
-            this.scanLoop(video);
-        } catch (error) {
-            console.error('Error accessing camera:', error);
-            if (errorMsgEl) {
-                errorMsgEl.textContent = 'Error accessing camera. Please check your permissions and try again.';
-            }
-        }
-    }
-
-    stopCamera() {
-        if (this.animFrameId) {
-            cancelAnimationFrame(this.animFrameId);
-            this.animFrameId = null;
-        }
-        if (this.stream) {
-            this.stream.getTracks().forEach(track => track.stop());
-            this.stream = null;
-        }
-    }
-
-    scanLoop(video) {
-        const detect = async () => {
-            if(!this.stream || video.readyState !== video.HAVE_ENOUGH_DATA) {
-                this.animFrameId = requestAnimationFrame(() => detect());
-                return;
-            }
-
-            if (this.detector) {
-                try {
-                    const barcodes = await this.detector.detect(video);
-                    if (barcodes.length > 0) {
-                        console.log('Barcode detected:', barcodes[0]);
-                        const barcode = barcodes[0];
-                        if (barcode.rawValue) {
-                            this.dispatchEvent(new CustomEvent('barcode-detected', {
-                                detail: {code: barcode.rawValue},
-                                bubbles: true,
-                                composed: true
-                            }));
-                        }
-                    }
-                } catch (error) {
-                }
-            }
-
-            this.animFrameId = requestAnimationFrame(() => detect());
-        };
-
-        this.animFrameId = requestAnimationFrame(detect);
     }
 
     render() {
@@ -125,15 +60,52 @@ export class PantryScannerDialog extends HTMLElement {
             </style>
             <dialog>
                 <div class="scanner-container">
-                    <h2>Scan Barcode</h2>
-                    <video autoplay playsinline muted></video>
-                    <p class="error-msg"></p>
+                    <video id="video" autoplay playsinline muted></video>
+                    <div class="viewfinder">
+                        <div class="scan-line"></div>
+                    </div>
                     <div class="actions">
-                        <button type="button" id="close-btn" class="btn btn-secondary">Cancel</button>
+                        <button type="button" id="cancel-btn" class="btn btn-secondary">Cancel</button>
                     </div>
                 </div>
             </dialog>
-        `
+        `;
+    }
+
+    async startCamera() {
+        const videoElement = this.shadowRoot.querySelector('video');
+        if (!videoElement || this._isStarting) {
+            return;
+        }
+
+        this._isStarting = true;
+
+        try {
+            this.cleanupScanner = await startCameraScanner(videoElement, async (barcode) => {
+                this.dispatchEvent(new CustomEvent('barcode-scanned', {
+                    detail: barcode,
+                    bubbles: true,
+                    composed: true
+                }));
+                await this.close();
+            });
+        } catch (error) {
+            console.error('Error starting camera:', error);
+            this.dispatchEvent(new CustomEvent('scanner-error', {
+                detail: {error: error},
+                bubbles: true,
+                composed: true
+            }));
+        } finally {
+            this._isStarting = false;
+        }
+    }
+
+    async stopCamera() {
+        if (this.cleanupScanner) {
+            this.cleanupScanner();
+            this.cleanupScanner = null;
+        }
     }
 }
 

@@ -12,7 +12,6 @@ form {
 
     .actions {
         display: flex;
-        justify-content: flex-end;
         gap: var(--space-xs);
         margin-block-start: var(--space-xs);
     }
@@ -30,4 +29,15 @@ input {
     border-radius: var(--space-xs);
     font-size: var(--font-size-sm);
     cursor: pointer;
+}
+
+.input-group {
+    display: flex;
+    gap: var(--space-xs);
+    width: 100%;
+
+    input {
+        flex: 1;
+        min-width: 0;
+    }
 }

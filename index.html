@@ -7,7 +7,117 @@
 	</head>
 	<body>
 		<pantry-app></pantry-app>
+		<!--<h1>GTIN-13 Decoder</h1>
+		<input type="file" id="image-input" accept="image/*">
+		<div class="scanner-container" style="position: relative; width: 100%; max-width: 500px; margin: 0 auto; overflow: hidden; border-radius: 12px; background-color: #000;">
+			<video id="scanner-video" autoplay playsinline muted style="width: 100%; height: auto; display: block"></video>
+			<div class="viewfinder" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 120px; border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 8px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4); pointer-events: none; display: flex; align-items: center; justify-content: center;">
+				<div class="scan-line" style="width: 100%; height: 2px; background-color: #ff3b30; box-shadow: 0 0 8px #ff3b30"></div>
+			</div>
+		</div>
+		<br><br>
+		<div id="result-row">
+			<label for="result">Result</label>
+			<input type="text" id="result">
+		</div>
+
+		<div class="debug-container" style="margin-top: 10px; text-align: center;">
+			<p style="font-family: sans-serif; font-size: 14px; margin-bottom: 5px;">Scanner Debug View (Viewfinder Slices)</p>
+			<canvas id="debug-canvas" width="300" height="120" style="border: 2px solid #333; background: #000;"></canvas>
+		</div>
+
+		<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+			<div>
+				<h3>Original Debug View</h3>
+				<img id="image-preview" alt="Image preview" style="display: none;">
+			</div>
+			<div>
+				<h3>Grayscale Debug View</h3>
+				<canvas id="grayscale-canvas"></canvas>
+			</div>
+
+			<div>
+				<h3>Binarized Debug View</h3>
+				<canvas id="binarized-canvas"></canvas>
+			</div>
+		</div>
+
+		<canvas id="analysis-canvas" style="display: none;"></canvas>-->
 
 		<script type="module" src="/src/main.js"></script>
+		<!--<script type="module">
+			import {
+				convertRgbToGrayscale,
+				generateBinarizedImageData,
+				scanBarcodeFromContext,
+				startCameraScanner
+			} from "./src/components/barcode";
+
+			const imageInput = document.getElementById('image-input');
+			const imagePreview = document.getElementById('image-preview');
+			const videoElement = document.getElementById('scanner-video');
+
+			const debugCanvas = document.getElementById('grayscale-canvas');
+			const debugCtx = debugCanvas.getContext('2d');
+
+			const binarizeCanvas = document.getElementById('binarized-canvas');
+			const binarizeCtx = binarizeCanvas.getContext('2d');
+
+			const analysisCanvas = document.getElementById('analysis-canvas');
+			const analysisCtx = analysisCanvas.getContext('2d', {willReadFrequently: true});
+
+			const resultInput = document.getElementById('result');
+
+			imageInput.addEventListener('change', (event) => {
+				const file = event.target.files[0];
+				if (!file) {
+					return;
+				}
+
+				imagePreview.src = URL.createObjectURL(file);
+				imagePreview.style.display = 'block';
+
+				imagePreview.onload = () => {
+					const width = imagePreview.naturalWidth;
+					const height = imagePreview.naturalHeight;
+
+					debugCanvas.width = width;
+					debugCanvas.height = height;
+					binarizeCanvas.width = width;
+					binarizeCanvas.height = height;
+					analysisCanvas.width = width;
+					analysisCanvas.height = height;
+
+					analysisCtx.drawImage(imagePreview, 0, 0);
+					const imgData = analysisCtx.getImageData(0, 0, width, height);
+					const pixels = imgData.data;
+
+					for (let i = 0; i < pixels.length; i += 4) {
+						const r = pixels[i];
+						const g = pixels[i + 1]
+						const b = pixels[i + 2];
+
+						const gray = convertRgbToGrayscale(r, g, b);
+
+						pixels[i] = gray;
+						pixels[i + 1] = gray;
+						pixels[i + 2] = gray;
+					}
+					debugCtx.putImageData(imgData, 0, 0);
+
+					binarizeCtx.putImageData(generateBinarizedImageData(analysisCtx, width, height), 0, 0);
+
+					resultInput.value = scanBarcodeFromContext(analysisCtx, width, height);
+				}
+			});
+
+			(async () => {
+				const stopCamera = await startCameraScanner(videoElement, (barcode) => {
+					console.log("Successfully scanned barcode from camera:", barcode);
+					resultInput.value = barcode;
+					stopCamera();
+				})
+			})();
+		</script>-->
 	</body>
 </html>
