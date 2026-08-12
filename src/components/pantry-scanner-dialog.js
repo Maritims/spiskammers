@@ -1,6 +1,6 @@
 import styles from '../styles/stylesheet.css?inline';
 import componentStyles from './pantry-scanner-dialog.css?inline';
-import {startCameraScanner} from "./barcode";
+import {startCameraScanner} from "../barcode";
 
 export class PantryScannerDialog extends HTMLElement {
     constructor() {
