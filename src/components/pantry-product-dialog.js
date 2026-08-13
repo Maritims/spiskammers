@@ -1,4 +1,5 @@
 import styles from '../styles/stylesheet.css?inline';
+import {createMeasurementUnitOptionsAsHtml, createPackageUnitOptionsAsHtml} from "../units";
 
 export class PantryProductDialog extends HTMLElement {
     constructor() {
@@ -102,7 +103,8 @@ export class PantryProductDialog extends HTMLElement {
                     </div>
                     <div class="field">
                         <label for="packageUnit">Package Unit</label>
-                        <input type="text" id="packageUnit" name="packageUnit" placeholder="e.g. bottle" required>
+                        <input type="text" id="packageUnit" name="packageUnit" list="package-unit-list" placeholder="e.g. bottle" required>
+                        <datalist id="package-unit-list">${createPackageUnitOptionsAsHtml()}</datalist>
                     </div>
                     <div class="field">
                         <label for="baseQuantity">Base Quantity per Package</label>
@@ -110,7 +112,8 @@ export class PantryProductDialog extends HTMLElement {
                     </div>
                     <div class="field">
                         <label for="baseUnit">Base Unit</label>
-                        <input type="text" id="baseUnit" name="baseUnit" placeholder="e.g. ml" required>
+                        <input type="text" id="baseUnit" name="baseUnit" list="measurement-unit-list" placeholder="e.g. ml" required>
+                        <datalist id="measurement-unit-list">${createMeasurementUnitOptionsAsHtml()}</datalist>
                     </div>
                     <div class="actions">
                         ${this.isEditing ? `<button type="button" class="btn btn-danger" id="delete-btn">Delete</button>` : ''}
