@@ -87,6 +87,7 @@ export const MEASUREMENT_UNITS = Object.freeze({
     }
 });
 
+// noinspection JSUnusedGlobalSymbols
 /**
  * Converts a value from one measurement unit to another if they share the same dimension.
  * @param {number} value - The value to convert.
@@ -123,11 +124,7 @@ export function convertMeasurementUnit(value, fromUnitName, toUnitName) {
  * @return {string} HTML string containing the option elements.
  */
 export function createPackageUnitOptionsAsHtml() {
-    return Object.values(PACKAGE_UNITS).map(unit => {
-        const label = i18n.t(`package.unit.${unit.code}.short`);
-        const value = i18n.t(`package.unit.${unit.code}.long`);
-        return `<option label="${label}" value="${value}"></option>`;
-    }).join('');
+    return Object.values(PACKAGE_UNITS).map(unit => `<option label="${unit.code}" value="${i18n.t(`package.unit.${unit.code}.long`)}"></option>`).join('');
 }
 
 /**
@@ -135,9 +132,5 @@ export function createPackageUnitOptionsAsHtml() {
  * @return {string} HTML string containing the option elements.
  */
 export function createMeasurementUnitOptionsAsHtml() {
-    return Object.values(MEASUREMENT_UNITS).map(unit => {
-        const label = i18n.t(`measurement.unit.${unit.code}.short`);
-        const value = i18n.t(`measurement.unit.${unit.code}.long`);
-        return `<option label="${label}" value="${value}"></option>`;
-    }).join('');
+    return Object.values(MEASUREMENT_UNITS).map(unit => `<option label="${unit.code}" value="${i18n.t(`measurement.unit.${unit.code}.long`)}"></option>`).join('');
 }

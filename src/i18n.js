@@ -29,7 +29,7 @@
  * | 'measurement.unit.liter.short'
  * | 'measurement.unit.liter.long'
  * | 'measurement.unit.piece.short'
- * | 'measurement.unit.piece.ong'
+ * | 'measurement.unit.piece.long'
  * | 'pantry.product.title.create'
  * | 'pantry.product.title.edit'
  * | 'pantry.product.ean.label'
@@ -40,6 +40,9 @@
  * | 'pantry.product.measurement.legend'
  * | 'pantry.product.measurement.quantity.label'
  * | 'pantry.product.measurement.unit.label'
+ * | 'pantry.product.notification.product-create'
+ * | 'pantry.product.notification.product-update'
+ * | 'pantry.product.notification.product-delete'
  * | 'pantry.checkin.title'
  * | 'pantry.checkin.ean.label'
  * | 'pantry.checkin.name.label'
@@ -48,6 +51,8 @@
  * | 'pantry.checkin.measurement.unit.label'
  * | 'pantry.checkin.measurement.quantity.label'
  * | 'pantry.checkin.scan.barcode.label'
+ * | 'pantry.checkin.notification.item-checkin'
+ * | 'pantry.checkin.notification.item-checkout'
  * | 'common.action.save'
  * | 'common.action.cancel'
  * | 'common.action.remove'
@@ -103,7 +108,7 @@ const englishTranslations = {
     'measurement.unit.liter.short': 'l',
     'measurement.unit.liter.long': 'liter',
     'measurement.unit.piece.short': 'pc',
-    'measurement.unit.piece.ong': 'pieces',
+    'measurement.unit.piece.long': 'pieces',
     'pantry.app.title': 'Pantry',
     'pantry.product.title.create': 'Create product',
     'pantry.product.title.edit': 'Edit product',
@@ -115,6 +120,9 @@ const englishTranslations = {
     'pantry.product.measurement.legend': 'Measurement',
     'pantry.product.measurement.quantity.label': 'Quantity',
     'pantry.product.measurement.unit.label': 'Unit',
+    'pantry.product.notification.product-create': 'Product created successfully',
+    'pantry.product.notification.product-update': 'Product updated successfully',
+    'pantry.product.notification.product-delete': 'Product deleted successfully',
     'pantry.checkin.title': 'Check in item',
     'pantry.checkin.ean.label': 'EAN',
     'pantry.checkin.name.label': 'Name',
@@ -123,6 +131,8 @@ const englishTranslations = {
     'pantry.checkin.measurement.unit.label': 'Unit',
     'pantry.checkin.measurement.quantity.label': 'Quantity',
     'pantry.checkin.scan.barcode.label': 'Scan barcode',
+    'pantry.checkin.notification.item-checkin': 'Item checked in successfully',
+    'pantry.checkin.notification.item-checkout': 'Item checked out successfully',
     'common.action.save': 'Save',
     'common.action.cancel': 'Cancel',
     'common.action.remove': 'Delete',
@@ -169,6 +179,9 @@ const norwegianTranslations = {
     'pantry.product.measurement.legend': 'Innhold pr. enhet',
     'pantry.product.measurement.quantity.label': 'Antall',
     'pantry.product.measurement.unit.label': 'Enhet',
+    'pantry.product.notification.product-create': 'Produkt opprettet',
+    'pantry.product.notification.product-update': 'Produkt oppdatert',
+    'pantry.product.notification.product-delete': 'Produkt slettet',
     'pantry.checkin.title': 'Sjekk inn',
     'pantry.checkin.ean.label': 'EAN',
     'pantry.checkin.name.label': 'Navn',
@@ -177,6 +190,8 @@ const norwegianTranslations = {
     'pantry.checkin.measurement.unit.label': 'Enhet',
     'pantry.checkin.measurement.quantity.label': 'Antall',
     'pantry.checkin.scan.barcode.label': 'Skann strekkode',
+    'pantry.checkin.notification.item-checkin': 'Innhold sjekket inn',
+    'pantry.checkin.notification.item-checkout': 'Innhold sjekket ut',
     'common.action.save': 'Lagre',
     'common.action.cancel': 'Avbryt',
     'common.action.remove': 'Slett',
@@ -215,7 +230,7 @@ class LocalizationManager extends EventTarget {
 
     /**
      * Translate a key to the current locale. If the key is not found, it will return the key itself.
-     * @param {string} key - The key to translate.
+     * @param {TranslationKey} key - The key to translate.
      * @return {string} The translated string, or the key itself if not found.
      */
     t(key) {

@@ -34,15 +34,6 @@ export class PantryApp extends HTMLElement {
         await this.loadItems();
         this.render();
 
-        this.shadowRoot.addEventListener('item-checkout', async (event) => {
-            const { id, amount } = event.detail;
-            await decrementPantryItemPackageQuantity(id, amount);
-            await this.loadItems();
-            this.updateList();
-
-            this.notify('Item checked out', 'success', 3000);
-        });
-
         this.shadowRoot.addEventListener('fab-click', async () => {
             await this.loadProducts();
             const dialog = this.shadowRoot.querySelector('pantry-checkin-dialog');
@@ -65,28 +56,37 @@ export class PantryApp extends HTMLElement {
             await this.loadItems();
             this.updateList();
 
-            this.notify('Item checked in', 'success', 3000);
+            this.notify(i18n.t('pantry.checkin.notification.item-checkin'), 'success', 3000);
+        });
+
+        this.shadowRoot.addEventListener('item-checkout', async (event) => {
+            const { id, amount } = event.detail;
+            await decrementPantryItemPackageQuantity(id, amount);
+            await this.loadItems();
+            this.updateList();
+
+            this.notify(i18n.t('pantry.checkin.notification.item-checkout'), 'success', 3000);
         });
 
         this.shadowRoot.addEventListener('product-create', async (event) => {
             const newProduct = event.detail;
             await addProduct(newProduct);
 
-            this.notify('Product added', 'success', 3000);
+            this.notify(i18n.t('pantry.product.notification.product-create'), 'success', 3000);
         });
 
         this.shadowRoot.addEventListener('product-update', async (event) => {
             const updatedProduct = event.detail;
             await updateProduct(updatedProduct);
 
-            this.notify('Product updated', 'success', 3000);
+            this.notify(i18n.t('pantry.product.notification.product-update'), 'success', 3000);
         });
 
         this.shadowRoot.addEventListener('product-delete', async (event) => {
             const ean = event.detail.ean;
             await deleteProduct(ean);
 
-            this.notify('Product deleted', 'success', 3000);
+            this.notify(i18n.t('pantry.product.notification.product-delete'), 'success', 3000);
         });
 
         this.shadowRoot.addEventListener('category-filter', async (event) => {

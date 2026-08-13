@@ -1,6 +1,7 @@
 import styles from '../styles/stylesheet.css?inline';
 import componentStyles from './pantry-scanner-dialog.css?inline';
 import {startCameraScanner} from "../barcode";
+import {i18n} from "../i18n";
 
 export class PantryScannerDialog extends HTMLElement {
     constructor() {
@@ -65,7 +66,7 @@ export class PantryScannerDialog extends HTMLElement {
                         <div class="scan-line"></div>
                     </div>
                     <div class="actions">
-                        <button type="button" id="cancel-btn" class="btn btn-secondary">Cancel</button>
+                        <button type="button" id="cancel-btn" class="btn btn-secondary">${i18n.t('common.action.cancel')}</button>
                     </div>
                 </div>
             </dialog>
