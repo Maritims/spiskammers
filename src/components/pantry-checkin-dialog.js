@@ -42,7 +42,7 @@ export class PantryCheckinDialog extends HTMLElement {
 
                 const product = this._products.find(p => p.ean === ean);
                 if (product) {
-                    this.shadowRoot.querySelector('input[name="name"]').value = product.name;
+                    this.shadowRoot.querySelector('input[name="name"]').value = product.code;
                     this.shadowRoot.querySelector('input[name="packageUnit"]').value = product.packageUnit;
                     this.shadowRoot.querySelector('input[name="baseQuantity"]').value = product.baseQuantity;
                     this.shadowRoot.querySelector('input[name="baseUnit"]').value = product.baseUnit;
@@ -104,7 +104,7 @@ export class PantryCheckinDialog extends HTMLElement {
     updateProductList() {
         const datalist = this.shadowRoot.querySelector('#product-list');
         if (datalist) {
-            datalist.innerHTML = this._products.map(product => `<option value="${product.ean}">${product.name}</option>`).join('');
+            datalist.innerHTML = this._products.map(product => `<option value="${product.ean}">${product.code}</option>`).join('');
         }
     }
 
@@ -117,7 +117,7 @@ export class PantryCheckinDialog extends HTMLElement {
                     <div class="field">
                         <label for="ean">${i18n.t('pantry.checkin.ean.label')}</label>
                         <input type="text" id="ean" name="ean" list="product-list" required>
-                        <datalist id="product-list">${this._products.map(product => `<option value="${product.ean}">${product.name}</option>`).join('')}</datalist>
+                        <datalist id="product-list">${this._products.map(product => `<option value="${product.ean}">${product.code}</option>`).join('')}</datalist>
                     </div>
                     <div class="field">
                         <label for="name">${i18n.t('pantry.checkin.name.label')}</label>

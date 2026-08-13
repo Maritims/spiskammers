@@ -38,7 +38,7 @@ export class PantryList extends HTMLElement {
             filteredItems.map(item => `
                 <pantry-item
                     item-id="${item.id}"
-                    name="${item.name}"
+                    name="${item.code}"
                     package-quantity="${item.packageQuantity}"
                     package-unit="${item.packageUnit}"
                     base-quantity="${item.baseQuantity}"

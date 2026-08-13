@@ -4,6 +4,32 @@
  * | 'i18n.locale.english'
  * | 'i18n.locale.norwegian'
  * | 'pantry.app.title'
+ * | 'package.unit.bag.short'
+ * | 'package.unit.bag.long'
+ * | 'package.unit.bottle.short',
+ * | 'package.unit.bottle.long',
+ * | 'package.unit.box.short'
+ * | 'package.unit.box.long'
+ * | 'package.unit.can.short'
+ * | 'package.unit.can.long'
+ * | 'package.unit.jar.short'
+ * | 'package.unit.jar.long'
+ * | 'package.unit.pack.short'
+ * | 'package.unit.pack.long'
+ * | 'package.unit.piece.short'
+ * | 'package.unit.piece.long'
+ * | 'measurement.unit.gram.short'
+ * | 'measurement.unit.gram.long'
+ * | 'measurement.unit.kilogram.short'
+ * | 'measurement.unit.kilogram.long'
+ * | 'measurement.unit.milliliter.short'
+ * | 'measurement.unit.milliliter.long'
+ * | 'measurement.unit.deciliter.short'
+ * | 'measurement.unit.deciliter.long'
+ * | 'measurement.unit.liter.short'
+ * | 'measurement.unit.liter.long'
+ * | 'measurement.unit.piece.short'
+ * | 'measurement.unit.piece.ong'
  * | 'pantry.product.title.create'
  * | 'pantry.product.title.edit'
  * | 'pantry.product.ean.label'
@@ -52,6 +78,32 @@ export const LOCALES = Object.freeze({
 const englishTranslations = {
     'i18n.locale.english': 'English',
     'i18n.locale.norwegian': 'Norwegian',
+    'package.unit.bag.short': 'bag',
+    'package.unit.bag.long': 'bag',
+    'package.unit.bottle.short': 'btl',
+    'package.unit.bottle.long': 'bottle',
+    'package.unit.box.short': 'box',
+    'package.unit.box.long': 'box',
+    'package.unit.can.short': 'can',
+    'package.unit.can.long': 'can',
+    'package.unit.jar.short': 'jar',
+    'package.unit.jar.long': 'jar',
+    'package.unit.pack.short': 'pk',
+    'package.unit.pack.long': 'pack',
+    'package.unit.piece.short': 'pc',
+    'package.unit.piece.long': 'piece',
+    'measurement.unit.gram.short': 'g',
+    'measurement.unit.gram.long': 'gram',
+    'measurement.unit.kilogram.short': 'kg',
+    'measurement.unit.kilogram.long': 'kilogram',
+    'measurement.unit.milliliter.short': 'ml',
+    'measurement.unit.milliliter.long': 'milliliter',
+    'measurement.unit.deciliter.short': 'dl',
+    'measurement.unit.deciliter.long': 'deciliter',
+    'measurement.unit.liter.short': 'l',
+    'measurement.unit.liter.long': 'liter',
+    'measurement.unit.piece.short': 'pc',
+    'measurement.unit.piece.ong': 'pieces',
     'pantry.app.title': 'Pantry',
     'pantry.product.title.create': 'Create product',
     'pantry.product.title.edit': 'Edit product',
@@ -80,6 +132,32 @@ const englishTranslations = {
 const norwegianTranslations = {
     'i18n.locale.english': 'Engelsk',
     'i18n.locale.norwegian': 'Norsk',
+    'package.unit.bag.short': 'pose',
+    'package.unit.bag.long': 'pose',
+    'package.unit.bottle.short': 'fl',
+    'package.unit.bottle.long': 'flaske',
+    'package.unit.box.short': 'eske',
+    'package.unit.box.long': 'eske',
+    'package.unit.can.short': 'boks',
+    'package.unit.can.long': 'boks',
+    'package.unit.jar.short': 'glass',
+    'package.unit.jar.long': 'glass',
+    'package.unit.pack.short': 'pk',
+    'package.unit.pack.long': 'pakke',
+    'package.unit.piece.short': 'pc',
+    'package.unit.piece.long': 'piece',
+    'measurement.unit.gram.short': 'g',
+    'measurement.unit.gram.long': 'gram',
+    'measurement.unit.kilogram.short': 'kg',
+    'measurement.unit.kilogram.long': 'kilogram',
+    'measurement.unit.milliliter.short': 'ml',
+    'measurement.unit.milliliter.long': 'milliliter',
+    'measurement.unit.deciliter.short': 'dl',
+    'measurement.unit.deciliter.long': 'desiliter',
+    'measurement.unit.liter.short': 'l',
+    'measurement.unit.liter.long': 'liter',
+    'measurement.unit.piece.short': 'stk',
+    'measurement.unit.piece.long': 'stykk',
     'pantry.app.title': 'Spiskammers',
     'pantry.product.title.create': 'Opprett produkt',
     'pantry.product.title.edit': 'Rediger produkt',

@@ -120,7 +120,7 @@ export async function addPantryItem(item) {
             if (item.ean) {
                 existing = items.find(i => i.ean === item.ean);
             } else {
-                existing = items.find(i => i.name.trim().toLowerCase() === item.name.trim().toLowerCase());
+                existing = items.find(i => i.code.trim().toLowerCase() === item.code.trim().toLowerCase());
             }
 
             if (existing) {

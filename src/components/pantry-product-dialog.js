@@ -68,7 +68,7 @@ export class PantryProductDialog extends HTMLElement {
         if (product) {
             eanInput.value = product.ean;
             eanInput.readOnly = true;
-            nameInput.value = product.name;
+            nameInput.value = product.code;
             packageUnitInput.value = product.packageUnit;
             baseQuantityInput.value = product.baseQuantity;
             baseUnitInput.value = product.baseUnit;

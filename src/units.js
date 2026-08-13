@@ -1,8 +1,9 @@
 /**
  * @typedef {Object} PackageUnit
- * @property {string} name - The name of the unit.
- * @property {string} abbreviation - The abbreviation of the unit.
+ * @property {string} code - The unit code.
  */
+
+import {i18n} from "./i18n";
 
 /**
  * @readonly
@@ -16,8 +17,7 @@ export const DIMENSIONS = Object.freeze({
 
 /**
  * @typedef {Object} MeasurementUnit
- * @property {string} name - The name of the unit.
- * @property {string} abbreviation - The abbreviation of the unit.
+ * @property {string} code - The unit code.
  * @property {string} dimension - The dimension of the unit.
  * @property {number} factor - The factor to convert the unit to base units.
  */
@@ -28,40 +28,25 @@ export const DIMENSIONS = Object.freeze({
  */
 export const PACKAGE_UNITS = Object.freeze({
     BAG: {
-        name: 'bag',
-        abbreviation: 'bag'
+        code: 'bag',
     },
     BOTTLE: {
-        name: 'bottle',
-        abbreviation: 'btl'
+        code: 'bottle',
     },
     BOX: {
-        name: 'box',
-        abbreviation: 'box'
+        code: 'box'
     },
     CAN: {
-        name: 'can',
-        abbreviation: 'can'
+        code: 'can'
     },
     JAR: {
-        name: 'jar',
-        abbreviation: 'jar'
+        code: 'jar'
     },
     PACK: {
-        name: 'pack',
-        abbreviation: 'pk'
+        code: 'pack'
     },
     PIECE: {
-        name: 'piece',
-        abbreviation: 'pc'
-    },
-    KILOGRAM: {
-        name: 'kilogram',
-        abbreviation: 'kg'
-    },
-    LITER: {
-        name: 'liter',
-        abbreviation: 'l'
+        code: 'piece',
     },
 });
 
@@ -71,38 +56,32 @@ export const PACKAGE_UNITS = Object.freeze({
  */
 export const MEASUREMENT_UNITS = Object.freeze({
     GRAM: {
-        name: 'gram',
-        abbreviation: 'g',
+        code: 'gram',
         dimension: DIMENSIONS.MASS,
         factor: 1
     },
     KILOGRAM: {
-        name: 'kilogram',
-        abbreviation: 'kg',
+        code: 'kilogram',
         dimension: DIMENSIONS.MASS,
         factor: 1000
     },
     MILLILITER: {
-        name: 'milliliter',
-        abbreviation: 'ml',
+        code: 'milliliter',
         dimension: DIMENSIONS.VOLUME,
         factor: 1
     },
     DECILITER: {
-        name: 'deciliter',
-        abbreviation: 'dl',
+        code: 'deciliter',
         dimension: DIMENSIONS.VOLUME,
         factor: 100
     },
     LITER: {
-        name: 'liter',
-        abbreviation: 'l',
+        code: 'liter',
         dimension: DIMENSIONS.VOLUME,
         factor: 1000
     },
     PIECE: {
-        name: 'piece',
-        abbreviation: 'pc',
+        code: 'piece',
         dimension: DIMENSIONS.COUNT,
         factor: 1
     }
@@ -118,7 +97,7 @@ export const MEASUREMENT_UNITS = Object.freeze({
 export function convertMeasurementUnit(value, fromUnitName, toUnitName) {
     const findUnit = (str) => {
         const normalizedStr = str.toLowerCase();
-        return Object.values(MEASUREMENT_UNITS).find(measurementUnit => measurementUnit.name === normalizedStr || measurementUnit.abbreviation === normalizedStr);
+        return Object.values(MEASUREMENT_UNITS).find(measurementUnit => measurementUnit.code === normalizedStr || measurementUnit.abbreviation === normalizedStr);
     }
 
     const fromUnit = findUnit(fromUnitName);
@@ -144,7 +123,11 @@ export function convertMeasurementUnit(value, fromUnitName, toUnitName) {
  * @return {string} HTML string containing the option elements.
  */
 export function createPackageUnitOptionsAsHtml() {
-    return Object.values(PACKAGE_UNITS).map(unit => `<option label="${unit.abbreviation}" value="${unit.name}"></option>`).join('');
+    return Object.values(PACKAGE_UNITS).map(unit => {
+        const label = i18n.t(`package.unit.${unit.code}.short`);
+        const value = i18n.t(`package.unit.${unit.code}.long`);
+        return `<option label="${label}" value="${value}"></option>`;
+    }).join('');
 }
 
 /**
@@ -152,5 +135,9 @@ export function createPackageUnitOptionsAsHtml() {
  * @return {string} HTML string containing the option elements.
  */
 export function createMeasurementUnitOptionsAsHtml() {
-    return Object.values(MEASUREMENT_UNITS).map(unit => `<option label="${unit.abbreviation}" value="${unit.name}"></option>`).join('');
+    return Object.values(MEASUREMENT_UNITS).map(unit => {
+        const label = i18n.t(`measurement.unit.${unit.code}.short`);
+        const value = i18n.t(`measurement.unit.${unit.code}.long`);
+        return `<option label="${label}" value="${value}"></option>`;
+    }).join('');
 }
