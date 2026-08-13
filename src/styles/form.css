@@ -22,7 +22,7 @@ label {
     font-weight: 500;
 }
 
-input {
+input, select {
     padding-block: var(--space-xs);
     padding-inline: var(--space-md);
     border: 1px solid var(--color-secondary);
@@ -31,13 +31,30 @@ input {
     cursor: pointer;
 }
 
-.input-group {
-    display: flex;
-    gap: var(--space-xs);
+fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+
+    legend {
+        padding: 0;
+        margin-block-end: var(--space-xxs);
+    }
+}
+
+.qty-unit-input-group {
+    display: grid;
+    grid-template-columns: calc(var(--base-size) * 5) 1fr;
+    gap: var(--base-size);
     width: 100%;
 
-    input {
-        flex: 1;
+    label, input {
+        min-width: 0;
+    }
+
+    > div {
+        display: flex;
+        flex-direction: column;
         min-width: 0;
     }
 }

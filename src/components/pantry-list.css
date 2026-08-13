@@ -1,5 +1,9 @@
 :host {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1rem;
+    gap: var(--base-size);
+
+    @media (min-width: 768px) {
+        grid-template-columns: 1fr;
+    }
 }

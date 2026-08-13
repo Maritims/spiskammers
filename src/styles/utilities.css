@@ -17,3 +17,11 @@
 .justify-content-between {
     justify-content: space-between;
 }
+
+.flex-grow-1 {
+    flex-grow: 1;
+}
+
+.flex-grow-3 {
+    flex-grow: 3;
+}

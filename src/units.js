@@ -144,7 +144,7 @@ export function convertMeasurementUnit(value, fromUnitName, toUnitName) {
  * @return {string} HTML string containing the option elements.
  */
 export function createPackageUnitOptionsAsHtml() {
-    return Object.values(PACKAGE_UNITS).map(unit => `<option label="${unit.name}" value="${unit.abbreviation}"></option>`).join('');
+    return Object.values(PACKAGE_UNITS).map(unit => `<option label="${unit.abbreviation}" value="${unit.name}"></option>`).join('');
 }
 
 /**
@@ -152,5 +152,5 @@ export function createPackageUnitOptionsAsHtml() {
  * @return {string} HTML string containing the option elements.
  */
 export function createMeasurementUnitOptionsAsHtml() {
-    return Object.values(MEASUREMENT_UNITS).map(unit => `<option label="${unit.name}" value="${unit.abbreviation}"></option>`).join('');
+    return Object.values(MEASUREMENT_UNITS).map(unit => `<option label="${unit.abbreviation}" value="${unit.name}"></option>`).join('');
 }

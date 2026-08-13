@@ -3,6 +3,7 @@ import {
     createMeasurementUnitOptionsAsHtml,
     createPackageUnitOptionsAsHtml
 } from "../units";
+import {i18n} from "../i18n";
 
 export class PantryCheckinDialog extends HTMLElement {
     constructor() {
@@ -112,39 +113,55 @@ export class PantryCheckinDialog extends HTMLElement {
             <style>${styles}</style>
             <dialog>
                 <form method="dialog">
-                    <h2>Check In Item</h2>
+                    <h2>${i18n.t('pantry.checkin.title')}</h2>
                     <div class="field">
-                        <label for="ean">EAN</label>
-                        <input type="text" id="ean" name="ean" list="product-list" placeholder="e.g. 7038010000065" required>
+                        <label for="ean">${i18n.t('pantry.checkin.ean.label')}</label>
+                        <input type="text" id="ean" name="ean" list="product-list" required>
                         <datalist id="product-list">${this._products.map(product => `<option value="${product.ean}">${product.name}</option>`).join('')}</datalist>
                     </div>
                     <div class="field">
-                        <label for="name">Name</label>
+                        <label for="name">${i18n.t('pantry.checkin.name.label')}</label>
                         <input type="text" id="name" name="name" required>
                     </div>
-                    <div class="field">
-                        <label for="packageQty">Package Qty</label>
-                        <input type="number" id="packageQty" name="packageQuantity" value="1" min="1" step="any" required>
-                    </div>
-                    <div class="field">
-                        <label for="packageUnit">Package Unit</label>
-                        <input type="text" id="packageUnit" name="packageUnit" list="package-unit-list" placeholder="e.g. bottle" required>
+                    
+                    <fieldset>
+                        <legend>${i18n.t('pantry.product.package.legend')}</legend>
                         <datalist id="package-unit-list">${createPackageUnitOptionsAsHtml()}</datalist>
-                    </div>
-                    <div class="field">
-                        <label for="baseQty">Base Qty per Package</label>
-                        <input type="number" id="baseQty" name="baseQuantity" value="1" min="1" step="any" required>
-                    </div>
-                    <div class="field">
-                        <label for="baseUnit">Base Unit</label>
-                        <input type="text" id="baseUnit" name="baseUnit" list="measurement-unit-list" placeholder="e.g. ml" required>
+                        
+                        <div class="qty-unit-input-group">
+                            <div>
+                                <label for="packageQuantity">${i18n.t('pantry.product.package.quantity.label')}</label>
+                                <input type="number" id="packageQuantity" name="packageQuantity" min="1" step="any" inputmode="decimal">
+                            </div>
+                            
+                            <div>
+                                <label for="packageUnit">${i18n.t('pantry.product.package.unit.label')}</label>
+                                <input type="text" id="packageUnit" name="packageUnit" list="package-unit-list" required>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>${i18n.t('pantry.product.measurement.legend')}</legend>
                         <datalist id="measurement-unit-list">${createMeasurementUnitOptionsAsHtml()}</datalist>
-                    </div>
+                        
+                        <div class="qty-unit-input-group">
+                            <div>
+                                <label for="baseUnit">${i18n.t('pantry.product.measurement.quantity.label')}</label>
+                                <input type="number" id="baseUnit" name="baseUnit" min="1" step="any" inputmode="decimal" required>
+                            </div>
+                            <div>
+                                <label for="baseQuantity">${i18n.t('pantry.product.measurement.unit.label')}</label>
+                                <input type="text" id="baseUnit" name="baseUnit" list="measurement-unit-list" required>
+                            </div>
+                        </div>
+                    </fieldset>
+                    
                     <div class="actions justify-content-between">
-                        <button type="button" id="scan-btn" class="btn btn-primary" title="Scan Barcode">📷</button>
+                        <button type="button" id="scan-btn" class="btn btn-primary" title="${i18n.t('pantry.checkin.scan.barcode.label')}">📷</button>
                         <div class="justify-content-flex-end">
-                            <button type="submit" class="btn btn-primary">Save</button>
-                            <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
+                            <button type="submit" class="btn btn-primary">${i18n.t('common.action.save')}</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-btn">${i18n.t('common.action.cancel')}</button>
                         </div>
                     </div>
                 </form>

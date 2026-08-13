@@ -1,3 +1,4 @@
+import './locale-selector';
 import './pantry-scanner-dialog';
 import './pantry-filter';
 import './pantry-toast';
@@ -17,6 +18,7 @@ import {
 } from "../db";
 import commonStyles from '../styles/stylesheet.css?inline';
 import componentStyles from './pantry-app.css?inline';
+import {i18n} from "../i18n";
 
 export class PantryApp extends HTMLElement {
     constructor() {
@@ -24,9 +26,11 @@ export class PantryApp extends HTMLElement {
         this.attachShadow({mode: 'open'});
         this.items = [];
         this.products = [];
+        this._onLanguageChange = () => this.render();
     }
 
     async connectedCallback() {
+        i18n.addEventListener('languagechange', this._onLanguageChange);
         await this.loadItems();
         this.render();
 
@@ -106,6 +110,10 @@ export class PantryApp extends HTMLElement {
         });
     }
 
+    disconnectedCallback() {
+        i18n.removeEventListener('languagechange', this._onLanguageChange);
+    }
+
     notify(message, type = 'success', duration) {
         window.dispatchEvent(new CustomEvent('toast-show', {
             detail: {message, type, duration}
@@ -148,7 +156,8 @@ export class PantryApp extends HTMLElement {
             ${componentStyles}
         </style>
         <header>
-            <h1>Pantry</h1>
+            <h1>${i18n.t('pantry.app.title')}</h1>
+            <locale-selector></locale-selector>
         </header>
         <main>
             <pantry-filter></pantry-filter>
