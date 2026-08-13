@@ -24,7 +24,9 @@ export class PantryApp extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
+        /** @type {Ingredient[]} */
         this.items = [];
+        /** @type {Product[]} */
         this.products = [];
         this._onLanguageChange = () => this.render();
     }

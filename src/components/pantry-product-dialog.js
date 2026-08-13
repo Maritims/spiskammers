@@ -1,6 +1,22 @@
 import styles from '../styles/stylesheet.css?inline';
 import {createMeasurementUnitOptionsAsHtml, createPackageUnitOptionsAsHtml} from "../units";
 import {i18n} from "../i18n";
+import {throwIfMissing} from "../shadow-helper";
+
+/**
+ * @event PantryProductDialog#product-create
+ * @type {CustomEvent<Product>}
+ */
+
+/**
+ * @event PantryProductDialog#product-update
+ * @type {CustomEvent<Product>}
+ */
+
+/**
+ * @event PantryProductDialog#product-delete
+ * @type {CustomEvent<{ean: string}>}
+ */
 
 export class PantryProductDialog extends HTMLElement {
     constructor() {
@@ -17,9 +33,11 @@ export class PantryProductDialog extends HTMLElement {
             const form = event.target;
             const formData = new FormData(form);
 
+            /** @type {Product} */
             const productData = {
                 ean: formData.get('ean'),
                 name: formData.get('name'),
+                packageQuantity: formData.get('packageQuantity'),
                 packageUnit: formData.get('packageUnit'),
                 baseQuantity: formData.get('baseQuantity'),
                 baseUnit: formData.get('baseUnit'),
@@ -58,20 +76,35 @@ export class PantryProductDialog extends HTMLElement {
         this.isEditing = !!product;
         this.render();
 
-        const dialog = this.shadowRoot.querySelector('dialog');
-        const eanInput = this.shadowRoot.querySelector('input[name="ean"]');
-        const nameInput = this.shadowRoot.querySelector('input[name="name"]');
-        const packageUnitInput = this.shadowRoot.querySelector('input[name="packageUnit"]');
-        const baseQuantityInput = this.shadowRoot.querySelector('input[name="baseQuantity"]');
-        const baseUnitInput = this.shadowRoot.querySelector('input[name="baseUnit"]');
+        /** @type {HTMLDialogElement} */
+        const dialog = throwIfMissing(this.shadowRoot, 'dialog');
+
+        /** @type {HTMLInputElement} */
+        const eanInput = throwIfMissing(this.shadowRoot, 'input[name="ean"]');
+
+        /** @type {HTMLInputElement} */
+        const nameInput = throwIfMissing(this.shadowRoot, 'input[name="name"]');
+
+        /** @type {HTMLInputElement} */
+        const packageUnitInput = throwIfMissing(this.shadowRoot, 'input[name="packageUnit"]');
+
+        /** @type {HTMLInputElement} */
+        const packageQuantityInput = throwIfMissing(this.shadowRoot, 'input[name="packageQuantity"]');
+
+        /** @type {HTMLInputElement} */
+        const baseUnitInput = throwIfMissing(this.shadowRoot, 'input[name="baseUnit"]');
+
+        /** @type {HTMLInputElement} */
+        const baseQuantityInput = throwIfMissing(this.shadowRoot, 'input[name="baseQuantity"]');
 
         if (product) {
             eanInput.value = product.ean;
             eanInput.readOnly = true;
-            nameInput.value = product.code;
+            nameInput.value = product.name;
             packageUnitInput.value = product.packageUnit;
-            baseQuantityInput.value = product.baseQuantity;
+            packageQuantityInput.value = product.packageQuantity;
             baseUnitInput.value = product.baseUnit;
+            baseQuantityInput.value = product.baseQuantity;
         } else {
             eanInput.readOnly = false;
         }
@@ -126,11 +159,11 @@ export class PantryProductDialog extends HTMLElement {
                         
                         <div class="qty-unit-input-group">
                             <div>
-                                <label for="baseUnit">${i18n.t('pantry.product.measurement.quantity.label')}</label>
-                                <input type="number" id="baseUnit" name="baseUnit" min="1" step="any" inputmode="decimal" required>
+                                <label for="baseQuantity">${i18n.t('pantry.product.measurement.quantity.label')}</label>
+                                <input type="number" id="baseUnit" name="baseQuantity" min="1" step="any" inputmode="decimal" required>
                             </div>
                             <div>
-                                <label for="baseQuantity">${i18n.t('pantry.product.measurement.unit.label')}</label>
+                                <label for="baseUnit">${i18n.t('pantry.product.measurement.unit.label')}</label>
                                 <input type="text" id="baseUnit" name="baseUnit" list="measurement-unit-list" required>
                             </div>
                         </div>

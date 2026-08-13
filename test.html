@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Test</title>
+		<link rel="stylesheet" href="/src/styles/stylesheet.css">
+		<style>
+			#test-results {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 1rem;
+			}
+
+			.test-block {
+				&:first-child {
+					margin-block-start: 1rem;
+				}
+			}
+
+			.test-title {
+				font-weight: bold;
+
+				margin-block-end: .25rem;
+			}
+
+			.test-cases-list {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+
+			.test-cases-list li {
+				margin: 2px 0;
+			}
+
+			.case-pass {
+				color: green;
+			}
+
+			.case-fail {
+				color: red;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Test Results</h1>
+		<div id="test-results"></div>
+
+		<script type="module">
+			import {runTests} from './src/test';
+
+			// The tests are self-registering.
+			import './src/components/pantry-product-dialog.test';
+
+			runTests();
+		</script>
+	</body>
+</html>

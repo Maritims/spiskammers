@@ -3,14 +3,22 @@
  * @property {number} [id] - Auto incremented primary key.
  * @property {string} name - Name of the product.
  * @property {string} ean - Unique EAN barcode.
+ * @property {string} packageUnit - Unit of the product in packages.
+ * @property {number} packageQuantity - Quantity of the product in packages.
+ * @property {string} baseUnit - Unit of the product in base units.
+ * @property {number} baseQuantity - Quantity of the product in base units.
  */
 
 /**
  * @typedef {Object} Ingredient
  * @property {number} [id] - Auto incremented primary key.
- * @property {number} productId - Foreign key referencing the product ID.
+ * @property {string} [ean] - Unique EAN barcode.
  * @property {string} name - Name of the ingredient.
- * @property {number} quantity - Quantity of the ingredient.
+ * @property {string} category - Category of the ingredient.
+ * @property {string} packageUnit - Unit of the ingredient in packages.
+ * @property {number} packageQuantity - Quantity of the ingredient in packages.
+ * @property {string} baseUnit - Unit of the ingredient in base units.
+ * @property {number} baseQuantity - Quantity of the ingredient in base units.
  */
 
 const DB_NAME = 'pantry_db';
@@ -28,6 +36,7 @@ export function openDB() {
                 const pantryStore = db.createObjectStore(PANTRY_STORE_NAME, {keyPath: 'id', autoIncrement: true});
                 pantryStore.createIndex('name', 'name', {unique: false});
 
+                /** @type {Ingredient[]} */
                 const initialItems = [{
                     name: 'Oats',
                     category: 'Grains',
@@ -94,6 +103,10 @@ export function openDB() {
     });
 }
 
+/**
+ * Get all pantry items.
+ * @return {Promise<Ingredient[]>}
+ */
 export async function getPantryItems() {
     const db = await openDB();
     return new Promise((resolve, reject) => {
@@ -106,6 +119,11 @@ export async function getPantryItems() {
     });
 }
 
+/**
+ * Add a pantry item to the database.
+ * @param {Ingredient} item - The item to add.
+ * @return {Promise<number>}
+ */
 export async function addPantryItem(item) {
     const db = await openDB();
     return new Promise((resolve, reject) => {

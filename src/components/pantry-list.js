@@ -5,10 +5,15 @@ export class PantryList extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
+        /** @type {Ingredient[]} */
         this._items = [];
         this._filters = [];
     }
 
+    /**
+     * Sets the items to display in the list.
+     * @param {Ingredient[]} val
+     */
     set items(val) {
         this._items = val || [];
         this.render();
@@ -38,7 +43,7 @@ export class PantryList extends HTMLElement {
             filteredItems.map(item => `
                 <pantry-item
                     item-id="${item.id}"
-                    name="${item.code}"
+                    name="${item.name}"
                     package-quantity="${item.packageQuantity}"
                     package-unit="${item.packageUnit}"
                     base-quantity="${item.baseQuantity}"
