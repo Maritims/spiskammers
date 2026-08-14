@@ -146,7 +146,6 @@ describe('PantryProductDialog in edit mode', () => {
         assertNotNull(deleteBtn, () => `Delete button should be present in edit mode`);
     })
 });
-
 describe('PantryProductDialog in create mode', () => {
     test('EAN input is empty and writable in create mode', (sandbox) => {
         // arrange
@@ -226,7 +225,6 @@ describe('PantryProductDialog in create mode', () => {
         assertNull(deleteBtn, () => `Delete button should not be present in create mode`);
     });
 });
-
 describe('Opening and closing PantryProductDialog', () => {
     test('open() should open the dialog', (sandbox) => {
         // arrange

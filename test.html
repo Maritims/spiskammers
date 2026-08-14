@@ -3,7 +3,6 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>Test</title>
-		<link rel="stylesheet" href="/src/styles/stylesheet.css">
 		<style>
 			body {
 				margin: 2rem;
@@ -11,13 +10,28 @@
 				color: #222;
 			}
 
+			header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
 			h1 {
 				margin-bottom: 1rem;
+			}
+
+			h2 {
+				margin: 0;
 			}
 
 			.container {
 				max-width: 1000px;
 				margin: 0 auto;
+			}
+
+			#testSummaryStatus {
+				font-size: 2em;
+				font-weight: bold;
 			}
 
 			#results {
@@ -77,6 +91,7 @@
 		<div class="container">
 			<header>
 				<h1>Test Summary Report</h1>
+				<span id="testSummaryStatus"></span>
 			</header>
 			<main>
 				<section id="results"></section>
@@ -88,6 +103,7 @@
 			import {renderTestResults} from './src/test/renderer';
 
 			// The tests are self-registering.
+			import './src/components/pantry-checkin-dialog.test';
 			import './src/components/pantry-product-dialog.test';
 
 			const results = runTestSuites();

@@ -30,9 +30,10 @@ function formatMilliseconds(ms) {
 /**
  * Creates a summary element for a test suite result.
  * @param {TestSuiteResult} testSuiteResult - The test suite result.
- * @return {HTMLDivElement} The created summary element.
+ * @param {number} index - The index of the test suite result.
+ * @return {HTMLDetailsElement} The created summary element.
  */
-function createTestSuiteSummary(testSuiteResult) {
+function createTestSuiteSummary(testSuiteResult, index) {
     const summaryEl = document.createElement('details');
     summaryEl.classList.add('test-suite-summary');
 
@@ -41,13 +42,16 @@ function createTestSuiteSummary(testSuiteResult) {
     const failedCount = testSuiteResult.results.length - passedCount;
     const totalCount = testSuiteResult.results.length;
     const allPassed = testSuiteResult.results.every(testCaseResult => testCaseResult.passed);
+
     summaryEl.open = true;
     summaryEl.innerHTML = `
-        <summary>
+        <summary style="display: flex; justify-content: space-between">
             <h2>
-                Test Suite: ${testSuiteResult.name}
-                <span class="${allPassed ? 'passed' : 'failed'}">${allPassed ? `[${passedCount}/${totalCount} PASSED]` : `[${failedCount}/${totalCount} FAILED]`}</span>
+                Test Suite #${index + 1}: ${testSuiteResult.name}
             </h2>
+            <div style="font-size: 1.5em; font-weight: bold">
+                <span class="${allPassed ? 'passed' : 'failed'}">${allPassed ? `[${passedCount}/${totalCount} PASSED]` : `[${failedCount}/${totalCount} FAILED]`}</span>
+            </div>
         </summary>
         
         <strong>Time:</strong>
@@ -100,12 +104,36 @@ function createTestSuiteSummary(testSuiteResult) {
  * @param {TestSuiteResults} testSuiteResults
  */
 export function renderTestResults(testSuiteResults) {
+    const testSummaryStatusEl = document.getElementById('testSummaryStatus');
     const resultsEl = document.getElementById('results');
 
-    testSuiteResults.results
-        .filter(testSuiteResult => testSuiteResult.results.length > 0)
-        .forEach(testSuiteResult => {
-            const summaryEl = createTestSuiteSummary(testSuiteResult);
-            resultsEl.appendChild(summaryEl);
-        });
+    let passedSuiteCount = 0;
+    let failedSuiteCount = 0;
+    let totalSuiteCount = 0;
+
+    const actualTestSuiteResults = testSuiteResults.results.filter(testSuiteResult => testSuiteResult.results.length > 0);
+
+    for (let i = 0; i < actualTestSuiteResults.length; i++){
+        const testSuiteResult = actualTestSuiteResults[i];
+
+        totalSuiteCount++;
+
+        if (testSuiteResult.results.every(testCaseResult => testCaseResult.passed)) {
+            passedSuiteCount++;
+        } else {
+            failedSuiteCount++;
+        }
+
+        const summaryEl = createTestSuiteSummary(testSuiteResult, i);
+        resultsEl.appendChild(summaryEl);
+    }
+
+    testSummaryStatusEl.innerHTML = `${passedSuiteCount === totalSuiteCount ? `[${totalSuiteCount}/${totalSuiteCount} PASSED]` : `[${failedSuiteCount}/${totalSuiteCount} FAILED]`}`;
+    if (passedSuiteCount === totalSuiteCount) {
+        testSummaryStatusEl.classList.add('passed');
+    } else {
+        testSummaryStatusEl.classList.add('failed');
+    }
+
+    console.log(`Test Summary: ${passedSuiteCount}/${totalSuiteCount} passed, ${failedSuiteCount} failed.`);
 }

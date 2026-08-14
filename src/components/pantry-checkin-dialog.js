@@ -9,9 +9,14 @@ export class PantryCheckinDialog extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
+        /** @type {Product[]} */
         this._products = [];
     }
 
+    /**
+     * @param {Product[]} val
+     * @return {void}
+     */
     set products(val) {
         this._products = val || [];
         this.updateProductList();
@@ -87,6 +92,10 @@ export class PantryCheckinDialog extends HTMLElement {
         })
     }
 
+    isOpen() {
+        return this.shadowRoot.querySelector('dialog').open;
+    }
+
     open() {
         const dialog = this.shadowRoot.querySelector('dialog');
         if (dialog) {
@@ -102,9 +111,10 @@ export class PantryCheckinDialog extends HTMLElement {
     }
 
     updateProductList() {
+        /** @type {HTMLDataListElement} */
         const datalist = this.shadowRoot.querySelector('#product-list');
         if (datalist) {
-            datalist.innerHTML = this._products.map(product => `<option value="${product.ean}">${product.code}</option>`).join('');
+            datalist.innerHTML = this._products.map(product => `<option value="${product.ean}">${product.name}</option>`).join('');
         }
     }
 
