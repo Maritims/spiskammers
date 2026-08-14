@@ -1,69 +1,228 @@
 import './pantry-product-dialog';
-import {test} from "../test";
+import {assertEquals, assertNotNull, assertNull, assertTrue} from "../test/asserts";
+import {anyNumber, anyString} from "../test/argumentMatchers";
+import {describe, test} from "../test/testSuite";
 
-test('PantryProductDialog renders correctly in edit mode', (sandbox, assert) => {
-    // arrange
-    const dialogEl = document.createElement('pantry-product-dialog');
-    sandbox.appendChild(dialogEl);
+describe('PantryProductDialog in edit mode', () => {
+    test('EAN input contains expected value and is read-only in edit mode', (sandbox) => {
+        // arrange
+        const expected = '7350012345678';
+        const dialogEl = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(dialogEl);
 
-    /** @type {Product} */
-    const mockProduct = {
-        ean: '7350012345678',
-        name: 'Test Product',
-        packageQuantity: 10,
-        packageUnit: 'kg',
-        baseQuantity: 10,
-        baseUnit: 'kg'
-    };
+        // act
+        dialogEl.open({
+            ean: expected,
+            name: anyString(),
+            packageQuantity: anyNumber(),
+            packageUnit: anyString(),
+            baseQuantity: anyNumber(),
+            baseUnit: anyString()
+        });
+        const eanInputEl = dialogEl.shadowRoot.querySelector('input[name="ean"]');
+        const actual = eanInputEl.value;
 
-    // act
-    dialogEl.open(mockProduct);
+        // assert
+        assertEquals(expected, actual, () => `EAN input has an unexpected value`);
+        assertTrue(eanInputEl.readOnly, () => `EAN input should be read-only in edit mode`);
+    });
+    test('Name input contains expected value in edit mode', (sandbox) => {
+        // arrange
+        const expected = 'Test Product';
+        const dialogEl = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(dialogEl);
 
-    const eanInput = dialogEl.shadowRoot.querySelector('input[name="ean"]');
-    const nameInput = dialogEl.shadowRoot.querySelector('input[name="name"]');
-    const packageQuantityInput = dialogEl.shadowRoot.querySelector('input[name="packageQuantity"]');
-    const packageUnitInput = dialogEl.shadowRoot.querySelector('input[name="packageUnit"]');
-    const baseQuantityInput = dialogEl.shadowRoot.querySelector('input[name="baseQuantity"]');
-    const baseUnitInput = dialogEl.shadowRoot.querySelector('input[name="baseUnit"]');
-    const deleteBtn = dialogEl.shadowRoot.querySelector('#delete-btn');
+        // act
+        dialogEl.open({
+            ean: anyString(),
+            name: expected,
+            packageQuantity: anyNumber(),
+            packageUnit: anyString(),
+            baseQuantity: anyNumber(),
+            baseUnit: anyString()
+        });
+        const nameInputEl = dialogEl.shadowRoot.querySelector('input[name="name"]');
 
-    // assert
-    assert(`Expected EAN ${mockProduct.ean} but got ${eanInput.value}`, () => eanInput.value === mockProduct.ean);
-    assert('EAN input should be read-only in edit mode', () => eanInput.readOnly === true);
-    assert(`Expected name ${mockProduct.name} but got ${nameInput.value}`, () => nameInput.value === mockProduct.name);
-    assert(`Expected package quantity ${mockProduct.packageQuantity} but got ${packageQuantityInput.value}`, () => Number(packageQuantityInput.value) === mockProduct.packageQuantity);
-    assert(`Expected package unit ${mockProduct.packageUnit} but got ${packageUnitInput.value}`, () => packageUnitInput.value === mockProduct.packageUnit);
-    assert(`Expected base quantity ${mockProduct.baseQuantity} but got ${baseQuantityInput.value}`, () => Number(baseQuantityInput.value) === mockProduct.baseQuantity);
-    assert(`Expected base unit ${mockProduct.baseUnit} but got '${baseUnitInput.value}' (quotes added)`, () => baseUnitInput.value === mockProduct.baseUnit);
-    assert('Delete button should be present in edit mode', () => deleteBtn !== null);
+        // assert
+        assertEquals(expected, nameInputEl.value, () => `Name input has an unexpected value`);
+    });
+    test('Package quantity input contains expected value in edit mode', (sandbox) => {
+        // arrange
+        const expected = 10;
+        const dialogEl = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(dialogEl);
 
-    // clean-up
-    dialogEl.remove();
+        // act
+        dialogEl.open({
+            ean: anyString(),
+            name: anyString(),
+            packageQuantity: expected,
+            packageUnit: anyString(),
+            baseQuantity: anyNumber(),
+            baseUnit: anyString()
+        });
+        const packageQuantityInputEl = dialogEl.shadowRoot.querySelector('input[name="packageQuantity"]');
+
+        // assert
+        assertEquals(expected, packageQuantityInputEl.valueAsNumber, () => `Package quantity input has an unexpected value`);
+    });
+    test('Package unit input contains expected value in edit mode', (sandbox) => {
+        // arrange
+        const expected = 'kg';
+        const dialogEl = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(dialogEl);
+
+        // act
+        dialogEl.open({
+            ean: anyString(),
+            name: anyString(),
+            packageQuantity: anyNumber(),
+            packageUnit: expected,
+            baseQuantity: anyNumber(),
+            baseUnit: anyString()
+        });
+        const packageUnitInputEl = dialogEl.shadowRoot.querySelector('input[name="packageUnit"]');
+
+        // assert
+        assertEquals(expected, packageUnitInputEl.value, () => `Package unit input has an unexpected value`);
+    });
+    test('Base quantity input contains expected value in edit mode', (sandbox) => {
+        // arrange
+        const expected = 10;
+        const dialogEl = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(dialogEl);
+
+        // act
+        dialogEl.open({
+            ean: anyString(),
+            name: anyString(),
+            packageQuantity: anyNumber(),
+            packageUnit: anyString(),
+            baseQuantity: expected,
+            baseUnit: anyString()
+        });
+        const baseQuantityInputEl = dialogEl.shadowRoot.querySelector('input[name="baseQuantity"]');
+
+        // assert
+        assertEquals(expected, baseQuantityInputEl.valueAsNumber, () => `Base quantity input has an unexpected value`);
+    });
+    test('Base unit input contains expected value in edit mode', (sandbox) => {
+        // arrange
+        const expected = 'kg';
+        const dialogEl = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(dialogEl);
+
+        // act
+        dialogEl.open({
+            ean: anyString(),
+            name: anyString(),
+            packageQuantity: anyNumber(),
+            packageUnit: anyString(),
+            baseQuantity: anyNumber(),
+            baseUnit: expected
+        });
+        const baseUnitInputEl = dialogEl.shadowRoot.querySelector('input[name="baseUnit"]');
+
+        // assert
+        assertEquals(expected, baseUnitInputEl.value, () => `Base unit input has an unexpected value`);
+    });
+    test('Delete button is present in edit mode', (sandbox) => {
+        // arrange
+        const dialogEl = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(dialogEl);
+
+        // act
+        dialogEl.open({
+            ean: anyString(),
+            name: anyString(),
+            packageQuantity: anyNumber(),
+            packageUnit: anyString(),
+            baseQuantity: anyNumber(),
+            baseUnit: anyString()
+        });
+        const deleteBtn = dialogEl.shadowRoot.querySelector('#delete-btn');
+
+        // assert
+        assertNotNull(deleteBtn, () => `Delete button should be present in edit mode`);
+    })
 });
 
-test('PantryProductDialog renders correctly in create mode', (sandbox, assert) => {
-    // arrange
-    const dialogEl = document.createElement('pantry-product-dialog');
-    sandbox.appendChild(dialogEl);
+describe('PantryProductDialog in create mode', () => {
+    test('EAN input is empty and writable in create mode', (sandbox) => {
+        // arrange
+        const dialogEl = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(dialogEl);
 
-    // act
-    dialogEl.open();
+        // act
+        dialogEl.open();
+        const eanInputEl = dialogEl.shadowRoot.querySelector('input[name="ean"]');
+        const actual = eanInputEl.value;
 
-    const eanInput = dialogEl.shadowRoot.querySelector('input[name="ean"]');
-    const nameInput = dialogEl.shadowRoot.querySelector('input[name="name"]');
-    const packageQuantityInput = dialogEl.shadowRoot.querySelector('input[name="packageQuantity"]');
-    const packageUnitInput = dialogEl.shadowRoot.querySelector('input[name="packageUnit"]');
-    const baseQuantityInput = dialogEl.shadowRoot.querySelector('input[name="baseQuantity"]');
-    const baseUnitInput = dialogEl.shadowRoot.querySelector('input[name="baseUnit"]');
-    const deleteBtn = dialogEl.shadowRoot.querySelector('#delete-btn');
+        // assert
+        assertEquals('', actual, () => `EAN input should be empty in create mode`);
+    });
+    test('Name input is empty in create mode', (sandbox) => {
+        // arrange
+        const dialogEl = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(dialogEl);
 
-    // assert
-    assert('EAN input should be empty in create mode', () => eanInput.value === '');
-    assert('EAN input should not be read-only in create mode', () => !eanInput.readOnly);
-    assert('Name input should be empty in create mode', () => nameInput.value === '');
-    assert('Package quantity input should be empty in create mode', () => packageQuantityInput.value === '');
-    assert('Package unit input should be empty in create mode', () => packageUnitInput.value === '');
-    assert('Base quantity input should be empty in create mode', () => baseQuantityInput.value === '');
-    assert('Base unit input should be empty in create mode', () => baseUnitInput.value === '');
-    assert('Delete button should not be present in create mode', () => deleteBtn === null);
+        // act
+        dialogEl.open();
+        const nameInputEl = dialogEl.shadowRoot.querySelector('input[name="name"]');
+        const actual = nameInputEl.value;
+
+        // assert
+        assertEquals('', actual, () => `Name input should be empty in create mode`);
+    });
+    test('Package quantity input is empty in create mode', (sandbox) => {
+        // arrange
+        const dialogEl = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(dialogEl);
+
+        // act
+        dialogEl.open();
+        const packageQuantityInputEl = dialogEl.shadowRoot.querySelector('input[name="packageQuantity"]');
+        const actual = packageQuantityInputEl.value;
+
+        // assert
+        assertEquals('', actual, () => `Package quantity input should be empty in create mode`);
+    });
+    test('Package unit input is empty in create mode', (sandbox) => {
+        // arrange
+        const dialogEl = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(dialogEl);
+
+        // act
+        dialogEl.open();
+        const packageUnitInputEl = dialogEl.shadowRoot.querySelector('input[name="packageUnit"]');
+        const actual = packageUnitInputEl.value;
+
+        // assert
+        assertEquals('', actual, () => `Package unit input should be empty in create mode`);
+    });
+    test('Base quantity input is empty in create mode', (sandbox) => {
+        // arrange
+        const dialogEl = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(dialogEl);
+
+        // act
+        dialogEl.open();
+        const baseQuantityInputEl = dialogEl.shadowRoot.querySelector('input[name="baseQuantity"]');
+        const actual = baseQuantityInputEl.value;
+
+        // assert
+        assertEquals('', actual, () => `Base quantity input should be empty in create mode`);
+    });
+    test('Delete button is not present in create mode', (sandbox) => {
+        // arrange
+        const dialogEl = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(dialogEl);
+
+        // act
+        dialogEl.open();
+        const deleteBtn = dialogEl.shadowRoot.querySelector('#delete-btn');
+
+        // assert
+        assertNull(deleteBtn, () => `Delete button should not be present in create mode`);
+    });
 });
