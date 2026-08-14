@@ -1,5 +1,5 @@
 import './pantry-product-dialog';
-import {assertEquals, assertNotNull, assertNull, assertTrue} from "../test/asserts";
+import {assertEquals, assertFalse, assertNotNull, assertNull, assertTrue} from "../test/asserts";
 import {anyNumber, anyString} from "../test/argumentMatchers";
 import {describe, test} from "../test/testSuite";
 
@@ -224,5 +224,33 @@ describe('PantryProductDialog in create mode', () => {
 
         // assert
         assertNull(deleteBtn, () => `Delete button should not be present in create mode`);
+    });
+});
+
+describe('Opening and closing PantryProductDialog', () => {
+    test('open() should open the dialog', (sandbox) => {
+        // arrange
+        const sut = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(sut);
+        assertFalse(sut.isOpen(), () => `Dialog should not be open before calling open()`);
+
+        // act
+        sut.open();
+
+        // assert
+        assertTrue(sut.isOpen(), () => `Dialog should be open after calling open()`);
+    });
+    test('close() should close the dialog', (sandbox) => {
+        // arrange
+        const sut = document.createElement('pantry-product-dialog');
+        sandbox.appendChild(sut);
+        sut.open();
+        assertTrue(sut.isOpen(), () => `Dialog should be open before calling close()`);
+
+        // act
+        sut.close();
+
+        // assert
+        assertFalse(sut.isOpen(), () => `Dialog should be closed after calling close()`);
     });
 });

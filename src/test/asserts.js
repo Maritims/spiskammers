@@ -19,24 +19,27 @@ export class AssertionError extends Error {
 
 /**
  * Asserts that the given value is false.
- * @param {boolean} expected - The expected value.
+ * @param {boolean} actual - The expected value.
  * @param {() => string} messageSupplier - A function that returns a message describing the assertion failure.
  */
-export function assertTrue(expected, messageSupplier) {
-    if (expected !== true) {
-        throw new AssertionError(true, expected, messageSupplier);
+export function assertTrue(actual, messageSupplier) {
+    if (typeof actual !== 'boolean') {
+        throw new AssertionError(true, actual, () => `Expected boolean, but got ${typeof actual}`);
+    }
+    if (actual !== true) {
+        throw new AssertionError(true, actual, messageSupplier);
     }
 }
 
 /**
  * Asserts that the given value is true.
- * @param {boolean} expected - The expected value.
+ * @param {boolean} actual - The expected value.
  * @param {() => string} messageSupplier - A function that returns a message describing the assertion failure.
  * @throws {AssertionError} If the assertion fails.
  */
-export function assertFalse(expected, messageSupplier) {
-    if (expected === true) {
-        throw new AssertionError(false, expected, messageSupplier);
+export function assertFalse(actual, messageSupplier) {
+    if (actual !== false) {
+        throw new AssertionError(false, actual, messageSupplier);
     }
 }
 

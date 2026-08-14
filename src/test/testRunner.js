@@ -42,6 +42,8 @@ function runTestCase(testCase) {
         if (e instanceof AssertionError) {
             passed = false;
             error = e;
+        } else {
+            throw e;
         }
     } finally {
         sandbox.remove();
@@ -62,17 +64,13 @@ function runTestCase(testCase) {
  */
 function runTestSuite(testSuite) {
     const startMs = performance.now();
-    console.group(`Running suite: ${testSuite.name}`);
 
     /** @type {TestCaseResult[]} */
     const testResults = [];
 
     for (const testCase of testSuite.testCases) {
-        console.log(`Running test: ${testCase.name}`);
         testResults.push(runTestCase(testCase));
     }
-
-    console.groupEnd();
 
     return {
         name: testSuite.name,

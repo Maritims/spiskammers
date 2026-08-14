@@ -72,6 +72,10 @@ export class PantryProductDialog extends HTMLElement {
         });
     }
 
+    isOpen() {
+        return this.shadowRoot.querySelector('dialog').open;
+    }
+
     open(product = null) {
         this.isEditing = !!product;
         this.render();
