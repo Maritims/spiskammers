@@ -8,12 +8,14 @@ export class AssertionError extends Error {
      * @param {any} expected - The expected value.
      * @param {any} actual - The actual value.
      * @param {() => string} messageSupplier - A function that returns a message describing the assertion failure.
+     * @param {Error} [cause] - The underlying error that caused the assertion failure.
      */
-    constructor(expected, actual, messageSupplier) {
+    constructor(expected, actual, messageSupplier, cause) {
         super(`Expected ${expected} (${typeof expected}), but got ${actual} (${typeof actual}): ${messageSupplier()}`);
         this.expected = expected;
         this.actual = actual;
         this.messageSupplier = messageSupplier;
+        this.cause = cause;
     }
 }
 

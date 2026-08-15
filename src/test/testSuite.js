@@ -1,7 +1,7 @@
 /**
  * @callback TestFunction
  * @param {HTMLElement} sandbox - The sandbox element to use for testing.
- * @return {void}
+ * @return {Promise<void>}
  */
 
 export class TestCase {
@@ -61,7 +61,7 @@ let currentSuite = null;
 /**
  * Registers a test function. If a test suite is active, it will be added to the current suite; otherwise, it will be added to the default suite.
  * @param {string} name - The name of the test.
- * @param {() => void} testFn - The test function.
+ * @param {TestFunction} testFn - The test function.
  */
 export function test(name, testFn) {
     const targetSuite = currentSuite || testSuites['default'];
@@ -94,7 +94,7 @@ export function describe(name, fn) {
 }
 
 /**
- * Returns a safe, cloned copy of the test suites registry.
+ * Returns a safe, cloned copy of the test suite registry.
  * @return {Object.<string, TestSuite>}
  */
 export function getTestSuites() {

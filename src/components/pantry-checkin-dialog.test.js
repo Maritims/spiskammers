@@ -89,4 +89,32 @@ describe('PantryCheckinDialog', () => {
         assertEquals('Test Product', productList.options[0].innerHTML, () => `Product list option should use the product name as its label`);
         assertEquals('0123456789', productList.options[0].value, () => `Product list option should use the product EAN as its value`);
     });
+    test('Finding a product by EAN should return the corresponding product', (sandbox) => {
+        // arrange
+        /** @type {PantryCheckinDialog} */
+        const sut = document.createElement('pantry-checkin-dialog');
+        sandbox.appendChild(sut);
+
+        sut.products = [{
+            name: 'Test Product',
+            ean: '0123456789',
+            packageQuantity: 1,
+            packageUnit: 'kg',
+            baseQuantity: 1,
+            baseUnit: 'kg'
+        }];
+
+        // act
+        sut.setEanValue('0123456789');
+
+        // assert
+        const nameInputEl = sut.shadowRoot.querySelector('input[name="name"]');
+        const packageUnitInputEl = sut.shadowRoot.querySelector('input[name="packageUnit"]');
+        const baseUnitInputEl = sut.shadowRoot.querySelector('input[name="baseUnit"]');
+        const baseQuantityInputEl = sut.shadowRoot.querySelector('input[name="baseQuantity"]');
+        assertEquals('Test Product', nameInputEl.value, () => `Name input should have the expected value`);
+        assertEquals('kg', packageUnitInputEl.value, () => `Package unit input should have the expected value`);
+        assertEquals('kg', baseUnitInputEl.value, () => `Base unit input should have the expected value`);
+        assertEquals(1, baseQuantityInputEl.valueAsNumber, () => `Base quantity input should have the expected value`);
+    });
 });

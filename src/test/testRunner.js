@@ -25,28 +25,74 @@ import {AssertionError} from "./asserts";
 /**
  * Runs a test case and returns the result.
  * @param {TestCase} testCase - The test case to run.
- * @return {TestCaseResult} The test result.
+ * @return {Promise<TestCaseResult>} The test result.
  */
-function runTestCase(testCase) {
+async function runTestCase(testCase) {
     const startMs = performance.now();
     let passed = true;
-    /** @type {AssertionError} */
+    /** @type {AssertionError | Error | null} */
     let error;
+    /** @type {Error | null} */
+    let unexpectedError;
 
     const sandbox = document.createElement('div');
     document.body.appendChild(sandbox);
 
+    /**
+     * Global error handler to catch any errors thrown during the test occurring outside the test function like in an event listener.
+     * @param {ErrorEvent} errorEvent - The error event.
+     */
+    const errorHandler = (errorEvent) => {
+        errorEvent.preventDefault();
+        passed = false;
+        if (!unexpectedError) {
+            unexpectedError = errorEvent.error || new Error(errorEvent.message);
+        }
+    };
+
+    /**
+     * Global promise rejection handler to catch any promise rejections that occur during the test.
+     * @param {PromiseRejectionEvent} promiseRejectionEvent - The promise rejection event.
+     */
+    const rejectionHandler = (promiseRejectionEvent) => {
+        promiseRejectionEvent.preventDefault();
+        passed = false;
+        if (!unexpectedError) {
+            unexpectedError = promiseRejectionEvent.reason instanceof Error ? promiseRejectionEvent.reason : new Error(promiseRejectionEvent.reason);
+        }
+    }
+
+    window.addEventListener('error', errorHandler);
+    window.addEventListener('unhandledrejection', rejectionHandler);
+
     try {
-        testCase.testFn(sandbox);
-    } catch (e) {
+        await testCase.testFn(sandbox);
+    }
+    /** @type {AssertionError} */
+    catch (e) {
+        passed = false;
         if (e instanceof AssertionError) {
-            passed = false;
             error = e;
         } else {
-            throw e;
+            unexpectedError = unexpectedError || e;
         }
     } finally {
+        window.removeEventListener('error', errorHandler);
+        window.removeEventListener('unhandledrejection', rejectionHandler);
         sandbox.remove();
+    }
+
+    if (unexpectedError && !error) {
+        passed = false;
+        error = new AssertionError(undefined, undefined, () => `Unexpected error occurred: `, unexpectedError);
+    } else if (unexpectedError && error) {
+        passed = false;
+        error = new AssertionError(
+            error.expected,
+            error.actual,
+            error.messageSupplier,
+            unexpectedError
+        );
     }
 
     return {
@@ -60,16 +106,17 @@ function runTestCase(testCase) {
 /**
  * Runs a test suite and returns the result.
  * @param {TestSuite} testSuite - The test suite to run.
- * @return {TestSuiteResult} The test suite result.
+ * @return {Promise<TestSuiteResult>} The test suite result.
  */
-function runTestSuite(testSuite) {
+async function runTestSuite(testSuite) {
     const startMs = performance.now();
 
     /** @type {TestCaseResult[]} */
     const testResults = [];
 
     for (const testCase of testSuite.testCases) {
-        testResults.push(runTestCase(testCase));
+        const testCaseResult = await runTestCase(testCase);
+        testResults.push(testCaseResult);
     }
 
     return {
@@ -81,16 +128,16 @@ function runTestSuite(testSuite) {
 
 /**
  * Runs all registered tests and returns the results.
- * @return {TestSuiteResults} The test suite results.
+ * @return {Promise<TestSuiteResults>} The test suite results.
  */
-export function runTestSuites() {
+export async function runTestSuites() {
     const startMs = performance.now();
     const testSuites = getTestSuites();
     /** @type {TestSuiteResult[]} */
     const testSuiteResults = [];
 
     for (const suite of Object.values(testSuites)) {
-        const testSuiteResult = runTestSuite(suite);
+        const testSuiteResult = await runTestSuite(suite);
         testSuiteResults.push(testSuiteResult);
     }
 

@@ -84,6 +84,7 @@ function createTestSuiteSummary(testSuiteResult, index) {
                                     </div>
                                     <div>
                                         <strong>Message:</strong> ${testCaseResult.error.messageSupplier()}
+                                        ${testCaseResult.error.cause ? `<pre>${testCaseResult.error.cause.stack}</pre>` : ''}
                                     </div>
                                 </div>
                             `}
@@ -134,6 +135,4 @@ export function renderTestResults(testSuiteResults) {
     } else {
         testSummaryStatusEl.classList.add('failed');
     }
-
-    console.log(`Test Summary: ${passedSuiteCount}/${totalSuiteCount} passed, ${failedSuiteCount} failed.`);
 }

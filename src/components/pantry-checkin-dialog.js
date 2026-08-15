@@ -30,7 +30,7 @@ export class PantryCheckinDialog extends HTMLElement {
         const eanInput = this.shadowRoot.querySelector('input[name="ean"]');
         if (eanInput) {
             eanInput.value = ean;
-            eanInput.dispatchEvent(new Event('blur', { bubbles: true}));
+            eanInput.dispatchEvent(new Event('blur', {bubbles: true}));
         }
     }
 
@@ -47,7 +47,7 @@ export class PantryCheckinDialog extends HTMLElement {
 
                 const product = this._products.find(p => p.ean === ean);
                 if (product) {
-                    this.shadowRoot.querySelector('input[name="name"]').value = product.code;
+                    this.shadowRoot.querySelector('input[name="name"]').value = product.name;
                     this.shadowRoot.querySelector('input[name="packageUnit"]').value = product.packageUnit;
                     this.shadowRoot.querySelector('input[name="baseQuantity"]').value = product.baseQuantity;
                     this.shadowRoot.querySelector('input[name="baseUnit"]').value = product.baseUnit;
@@ -162,7 +162,7 @@ export class PantryCheckinDialog extends HTMLElement {
                             </div>
                             <div>
                                 <label for="baseQuantity">${i18n.t('pantry.product.measurement.unit.label')}</label>
-                                <input type="text" id="baseUnit" name="baseUnit" list="measurement-unit-list" required>
+                                <input type="text" id="baseQuantity" name="baseQuantity" list="measurement-unit-list" required>
                             </div>
                         </div>
                     </fieldset>

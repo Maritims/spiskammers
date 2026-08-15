@@ -106,8 +106,7 @@
 			import './src/components/pantry-checkin-dialog.test';
 			import './src/components/pantry-product-dialog.test';
 
-			const results = runTestSuites();
-			renderTestResults(results);
+			runTestSuites().then(results => renderTestResults(results));
 		</script>
 	</body>
 </html>
