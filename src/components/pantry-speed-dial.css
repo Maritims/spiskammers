@@ -1,0 +1,73 @@
+:host {
+    --speed-dial-base-size: calc(var(--base-size) * 1);
+    --trigger-size: calc(var(--speed-dial-base-size) * 3.5);
+    --action-size: calc(var(--speed-dial-base-size) * 3);
+    --offset: calc((var(--trigger-size) - var(--action-size)) / 2);
+    --travel-distance: calc(var(--trigger-size) + var(--offset));
+
+    @media (min-width: 768px) {
+        --speed-dial-base-size: var(--base-size);
+    }
+}
+
+.speed-dial {
+    position: fixed;
+    bottom: var(--base-size);
+    left: var(--base-size);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 1rem;
+
+    .trigger, .action {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--color-border);
+        cursor: pointer;
+        justify-content: center;
+        z-index: 2;
+    }
+
+    .trigger {
+        width: var(--trigger-size);
+        height: var(--trigger-size);
+        border-radius: 50%;
+        font-size: var(--font-size-lg);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+
+        .icon {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+    }
+
+    .action {
+        gap: calc(var(--base-size) * 0.5);
+        width: var(--action-size);
+        padding: var(--space-xs) var(--space-xl);
+        border-radius: calc(var(--action-size) / 2);
+        border: 0.125rem solid var(--color-border);
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+        font-size: var(--font-size-md);
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(0.5rem);
+        pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease, box-shadow 0.3s ease;
+    }
+
+    &.open {
+        .action {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0rem);
+            pointer-events: auto;
+        }
+
+        .trigger .icon {
+            transform: rotate(45deg);
+        }
+    }
+}

@@ -56,6 +56,7 @@
  * | 'common.action.save'
  * | 'common.action.cancel'
  * | 'common.action.remove'
+ * | 'common.error.invalid-value'
  * } TranslationKey
  */
 
@@ -136,6 +137,7 @@ const englishTranslations = {
     'common.action.save': 'Save',
     'common.action.cancel': 'Cancel',
     'common.action.remove': 'Delete',
+    'common.error.invalid-value': 'Invalid value',
 };
 
 /** @type {TranslationDictionary} */
@@ -195,6 +197,7 @@ const norwegianTranslations = {
     'common.action.save': 'Lagre',
     'common.action.cancel': 'Avbryt',
     'common.action.remove': 'Slett',
+    'common.error.invalid-value': 'Ugyldig verdi',
 }
 
 /** @type {Record<'en-US' | 'nb-NO', TranslationDictionary>} */

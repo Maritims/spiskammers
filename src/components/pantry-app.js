@@ -1,11 +1,10 @@
+import './pantry-speed-dial';
 import './locale-selector';
 import './pantry-scanner-dialog';
 import './pantry-filter';
 import './pantry-toast';
 import './pantry-list';
-import './pantry-fab';
 import './pantry-checkin-dialog';
-import './pantry-product-fab';
 import './pantry-product-dialog';
 import {
     addPantryItem,
@@ -36,7 +35,19 @@ export class PantryApp extends HTMLElement {
         await this.loadItems();
         this.render();
 
-        this.shadowRoot.addEventListener('fab-click', async () => {
+        /** @type {PantrySpeedDial} */
+        const speedDial = this.shadowRoot.querySelector('pantry-speed-dial');
+        speedDial.actions = [{
+            eventName: 'speed-dial-checkin',
+            buttonLabel: 'Open check-in dialog',
+            icon: '📦'
+        }, {
+            eventName: 'speed-dial-create-product',
+            buttonLabel: 'Open product dialog',
+            icon: '🛒'
+        }];
+
+        this.shadowRoot.addEventListener('speed-dial-checkin', async () => {
             await this.loadProducts();
             const dialog = this.shadowRoot.querySelector('pantry-checkin-dialog');
             if (dialog) {
@@ -45,7 +56,7 @@ export class PantryApp extends HTMLElement {
             }
         });
 
-        this.shadowRoot.addEventListener('product-fab-click', () => {
+        this.shadowRoot.addEventListener('speed-dial-create-product', () => {
             const dialog = this.shadowRoot.querySelector('pantry-product-dialog');
             if (dialog) {
                 dialog.open();
@@ -165,8 +176,7 @@ export class PantryApp extends HTMLElement {
             <pantry-filter></pantry-filter>
             <pantry-list></pantry-list>
         </main>
-        <pantry-fab></pantry-fab>
-        <pantry-product-fab></pantry-product-fab>
+        <pantry-speed-dial></pantry-speed-dial>
         <pantry-checkin-dialog></pantry-checkin-dialog>
         <pantry-scanner-dialog></pantry-scanner-dialog>
         <pantry-product-dialog></pantry-product-dialog>

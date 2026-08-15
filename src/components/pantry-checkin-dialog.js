@@ -55,6 +55,15 @@ export class PantryCheckinDialog extends HTMLElement {
             });
         }
 
+        this.shadowRoot.querySelector('input[name="packageUnit"]').addEventListener('change', (event) => {
+            /** @type {HTMLInputElement} */
+            const inputEl = event.target;
+            /** @type {HTMLDataListElement} */
+            const datalistEl = this.shadowRoot.querySelector(`datalist#${inputEl.getAttribute('list')}`);
+            const isValid = [...datalistEl.options].map(option => option.value).includes(event.target.value);
+            event.target.setCustomValidity(isValid ? '' : i18n.t('foo.bar'));
+        });
+
         this.shadowRoot.addEventListener('submit', (event) => {
             event.preventDefault();
             const form = event.target;
@@ -126,7 +135,7 @@ export class PantryCheckinDialog extends HTMLElement {
                     <h2>${i18n.t('pantry.checkin.title')}</h2>
                     <div class="field">
                         <label for="ean">${i18n.t('pantry.checkin.ean.label')}</label>
-                        <input type="text" id="ean" name="ean" list="product-list" required>
+                        <input type="text" id="ean" name="ean" list="product-list" pattern="^[0-9]{13}$">
                         <datalist id="product-list">${this._products.map(product => `<option value="${product.ean}">${product.code}</option>`).join('')}</datalist>
                     </div>
                     <div class="field">
