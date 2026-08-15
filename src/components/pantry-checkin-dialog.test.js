@@ -2,7 +2,7 @@ import './pantry-checkin-dialog';
 import {describe, test} from "../test/testSuite";
 import {assertEquals, assertFalse, assertTrue} from "../test/asserts";
 
-describe('Opening and closing PantryCheckinDialog', () => {
+describe('PantryCheckinDialog', () => {
     test('open() should open the dialog', (sandbox) => {
         // arrange
         const sut = document.createElement('pantry-checkin-dialog');
@@ -28,9 +28,6 @@ describe('Opening and closing PantryCheckinDialog', () => {
         // assert
         assertFalse(sut.isOpen(), () => `Dialog should be closed after calling close()`);
     });
-});
-
-describe('PantryCheckinDialog', () => {
     test('Setting products should update the product list', (sandbox) => {
         // arrange
         const sut = document.createElement('pantry-checkin-dialog');
@@ -84,7 +81,6 @@ describe('PantryCheckinDialog', () => {
         // assert
         /** @type {HTMLDataListElement} */
         const productList = sut.shadowRoot.querySelector('#product-list');
-        console.log(productList.options[0]);
         assertEquals(1, productList.options.length, () => `Product list should have one child`);
         assertEquals('Test Product', productList.options[0].innerHTML, () => `Product list option should use the product name as its label`);
         assertEquals('0123456789', productList.options[0].value, () => `Product list option should use the product EAN as its value`);

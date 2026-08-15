@@ -1,3 +1,5 @@
+import {AssertionError, VerificationError, VerifyEventError} from "./asserts";
+
 function formatMilliseconds(ms) {
     if (ms === 0) return '0 ms';
 
@@ -25,6 +27,44 @@ function formatMilliseconds(ms) {
     }
 
     return parts.join(', ') + '.';
+}
+
+function renderError(error) {
+    if (!error) {
+        throw new Error('error is required');
+    }
+
+    if (error instanceof AssertionError) {
+        return `
+            <div>
+                <strong>Expected:</strong> ${error.expected}
+            </div>
+            <div>
+                <strong>Actual:</strong> ${error.actual}                                
+            </div>
+            <div>
+                <strong>Message:</strong> ${error.messageSupplier ? error.messageSupplier() : error.message}
+                ${error.cause ? `<pre>${error.cause.stack}</pre>` : ''}
+            </div>
+        `;
+    } else if (error instanceof VerifyEventError) {
+        return `
+            <div>
+                <strong>Expected event:</strong> ${error.eventName}
+            </div>
+            <div>
+                <strong>Expected invocations:</strong> ${error.expectedInvocations}
+            </div>
+            <div>
+                <strong>Actual invocations:</strong> ${error.actualInvocations}
+            </div>
+            <div>
+                <strong>Message:</strong> ${error.messageSupplier ? error.messageSupplier() : error.message}
+            </div>
+        `;
+    } else {
+        return ``;
+    }
 }
 
 /**
@@ -74,20 +114,7 @@ function createTestSuiteSummary(testSuiteResult, index) {
                             <div class="${testCaseResult.passed ? 'passed' : 'failed'}">
                                 <strong>${testCaseResult.passed ? 'PASSED' : 'FAILED'}</strong>
                             </div>
-                            ${testCaseResult.passed ? '' : `
-                                <div style="display: grid; grid-template-columns: 1fr">
-                                    <div>
-                                        <strong>Expected:</strong> ${testCaseResult.error.expected}
-                                    </div>
-                                    <div>
-                                        <strong>Actual:</strong> ${testCaseResult.error.actual}                                
-                                    </div>
-                                    <div>
-                                        <strong>Message:</strong> ${testCaseResult.error.messageSupplier()}
-                                        ${testCaseResult.error.cause ? `<pre>${testCaseResult.error.cause.stack}</pre>` : ''}
-                                    </div>
-                                </div>
-                            `}
+                            ${testCaseResult.passed ? '' : `<div style="display: grid; grid-template-columns: 1fr">${renderError(testCaseResult.error)}</div>`}
                         </div>
                     </td>
                     <td>${formatMilliseconds(testCaseResult.elapsedMs)}</td>

@@ -19,6 +19,37 @@ export class AssertionError extends Error {
     }
 }
 
+export class VerificationError extends Error {
+    /**
+     * Creates a VerificationError.
+     * @param {() => string} messageSupplier - A function that returns a message describing the verification failure.
+     */
+    constructor(messageSupplier) {
+        super("Verification failed");
+        this.messageSupplier = messageSupplier;
+    }
+}
+
+/**
+ * Represents an error related to verifying an event.
+ * @extends VerificationError
+ */
+export class VerifyEventError extends VerificationError {
+    /**
+     * Creates a VerifyEventError.
+     * @param {string} eventName - The name of the event that was expected.
+     * @param {number} expectedInvocations - The number of times the event was expected to be dispatched.
+     * @param {number} actualInvocations - The number of times the event was actually dispatched.
+     * @param {() => string} [messageSupplier] - A function that returns a message describing the verification failure.
+     */
+    constructor(eventName, expectedInvocations, actualInvocations, messageSupplier) {
+        super(messageSupplier);
+        this.eventName = eventName;
+        this.expectedInvocations = expectedInvocations;
+        this.actualInvocations = actualInvocations;
+    }
+}
+
 /**
  * Asserts that the given value is false.
  * @param {boolean} actual - The expected value.
@@ -83,4 +114,40 @@ export function assertNotNull(actual, messageSupplier) {
     if (actual === null || actual === undefined) {
         throw new AssertionError(null, actual, messageSupplier);
     }
+}
+
+/**
+ * Executes an action and verifies that an event is dispatched on the target element.
+ * @param {EventTarget} target - The element to listen on..
+ * @param {string} eventName - The name of the event to listen for.
+ * @param {() => void} action - The function that triggers the event.
+ * @param {number} [timeoutMs=1000] Optional. The maximum time to wait for the event to be dispatched. Defaults to 1000ms.
+ * @return {Promise<Event>} A promise that resolves with the dispatched event.
+ */
+export function verifyEvent(target, eventName, action, timeoutMs = 1000) {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+            cleanup();
+            reject(new VerifyEventError(eventName, 1, 0, () => 'The event did not occur within the specified timeout.'));
+        }, timeoutMs);
+
+        const eventListener = (event) => {
+            cleanup();
+            resolve(event);
+        };
+
+        function cleanup() {
+            clearTimeout(timer);
+            target.removeEventListener(eventName, eventListener);
+        }
+
+        target.addEventListener(eventName, eventListener);
+
+        try {
+            action();
+        } catch (e) {
+            cleanup();
+            reject(e);
+        }
+    })
 }

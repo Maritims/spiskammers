@@ -20,7 +20,7 @@
  */
 
 import {getTestSuites, TestCase, TestSuite} from "./testSuite";
-import {AssertionError} from "./asserts";
+import {AssertionError, VerificationError, VerifyEventError} from "./asserts";
 
 /**
  * Runs a test case and returns the result.
@@ -71,7 +71,8 @@ async function runTestCase(testCase) {
     /** @type {AssertionError} */
     catch (e) {
         passed = false;
-        if (e instanceof AssertionError) {
+        if (e instanceof AssertionError || e instanceof VerificationError) {
+            console.log(e);
             error = e;
         } else {
             unexpectedError = unexpectedError || e;
