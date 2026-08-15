@@ -87,7 +87,14 @@ export class PantrySpeedDial extends HTMLElement {
             </style>
             <div class="speed-dial" id="speedDial">
                 <button class="trigger" aria-expanded="false" aria-label="Open the speed dial menu">➕</button>
-                ${this._actions.map(action => `<button data-event="${action.eventName}" class="action" aria-label="${action.buttonLabel}">${action.icon}</button>`).join('')}
+                <div class="actions">
+                    ${this._actions.map(action => `
+                        <button data-event="${action.eventName}" class="action" aria-label="${action.buttonLabel}">
+                            <span class="icon">${action.icon}</span>
+                            <span class="label">${action.buttonLabel}</span>
+                        </button>
+                    `).join('')}
+                </div>
             </div>
         `
     }
