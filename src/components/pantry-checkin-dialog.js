@@ -157,12 +157,12 @@ export class PantryCheckinDialog extends HTMLElement {
                         
                         <div class="qty-unit-input-group">
                             <div>
-                                <label for="baseUnit">${i18n.t('pantry.product.measurement.quantity.label')}</label>
-                                <input type="number" id="baseUnit" name="baseUnit" min="1" step="any" inputmode="decimal" required>
+                                <label for="baseQuantity">${i18n.t('pantry.product.measurement.quantity.label')}</label>
+                                <input type="number" id="baseQuantity" name="baseQuantity" min="1" step="any" inputmode="decimal" required>
                             </div>
                             <div>
-                                <label for="baseQuantity">${i18n.t('pantry.product.measurement.unit.label')}</label>
-                                <input type="text" id="baseQuantity" name="baseQuantity" list="measurement-unit-list" required>
+                                <label for="baseUnit">${i18n.t('pantry.product.measurement.unit.label')}</label>
+                                <input type="text" id="baseUnit" name="baseUnit" list="measurement-unit-list" required>
                             </div>
                         </div>
                     </fieldset>
