@@ -132,13 +132,14 @@ export async function addPantryItem(item) {
         const request = store.getAll();
 
         request.onsuccess = (event) => {
+            /** @type {Ingredient[]} */
             const items = event.target.result;
             let existing = null;
 
             if (item.ean) {
                 existing = items.find(i => i.ean === item.ean);
             } else {
-                existing = items.find(i => i.code.trim().toLowerCase() === item.code.trim().toLowerCase());
+                existing = items.find(i => i.name.trim().toLowerCase() === item.name.trim().toLowerCase());
             }
 
             if (existing) {
