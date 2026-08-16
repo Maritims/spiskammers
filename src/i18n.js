@@ -4,6 +4,10 @@
  * | 'i18n.locale.english'
  * | 'i18n.locale.norwegian'
  * | 'pantry.app.title'
+ * | 'pantry.item.deposit-button.label',
+ * | 'pantry.item.deposit-button.confirmation-message'
+ * | 'pantry.item.withdraw-button.label'
+ * | 'pantry.item.withdraw-button.confirmation-message'
  * | 'package.unit.bag.short'
  * | 'package.unit.bag.long'
  * | 'package.unit.bottle.short',
@@ -53,6 +57,8 @@
  * | 'pantry.checkin.scan.barcode.label'
  * | 'pantry.checkin.notification.item-checkin'
  * | 'pantry.checkin.notification.item-checkout'
+ * | 'pantry.speed-dial.checkin.button.label'
+ * | 'pantry.speed-dial.create-product.button.label'
  * | 'common.action.save'
  * | 'common.action.cancel'
  * | 'common.action.remove'
@@ -111,6 +117,10 @@ const englishTranslations = {
     'measurement.unit.piece.short': 'pc',
     'measurement.unit.piece.long': 'pieces',
     'pantry.app.title': 'Pantry',
+    'pantry.item.deposit-button.label': 'Deposit',
+    'pantry.item.deposit-button.confirmation-message': 'Are you sure you want to deposit {0} {1} of {2}?',
+    'pantry.item.withdraw-button.label': 'Withdraw',
+    'pantry.item.withdraw-button.confirmation-message': 'Are you sure you want to withdraw {0} {1} of {2}?',
     'pantry.product.title.create': 'Create product',
     'pantry.product.title.edit': 'Edit product',
     'pantry.product.ean.label': 'EAN',
@@ -134,6 +144,8 @@ const englishTranslations = {
     'pantry.checkin.scan.barcode.label': 'Scan barcode',
     'pantry.checkin.notification.item-checkin': 'Item checked in successfully',
     'pantry.checkin.notification.item-checkout': 'Item checked out successfully',
+    'pantry.speed-dial.checkin.button.label': 'Open check-in dialog',
+    'pantry.speed-dial.create-product.button.label': 'Open product dialog',
     'common.action.save': 'Save',
     'common.action.cancel': 'Cancel',
     'common.action.remove': 'Delete',
@@ -171,6 +183,10 @@ const norwegianTranslations = {
     'measurement.unit.piece.short': 'stk',
     'measurement.unit.piece.long': 'stykk',
     'pantry.app.title': 'Spiskammers',
+    'pantry.item.deposit-button.label': 'Sett inn',
+    'pantry.item.deposit-button.confirmation-message': 'Er du sikker på at du vil sette inn {0} {1} av {2}?',
+    'pantry.item.withdraw-button.label': 'Ta ut',
+    'pantry.item.withdraw-button.confirmation-message': 'Er du sikker på at du vil ta ut {0} {1} av {2}?',
     'pantry.product.title.create': 'Opprett produkt',
     'pantry.product.title.edit': 'Rediger produkt',
     'pantry.product.ean.label': 'EAN',
@@ -194,6 +210,8 @@ const norwegianTranslations = {
     'pantry.checkin.scan.barcode.label': 'Skann strekkode',
     'pantry.checkin.notification.item-checkin': 'Innhold sjekket inn',
     'pantry.checkin.notification.item-checkout': 'Innhold sjekket ut',
+    'pantry.speed-dial.checkin.button.label': 'Åpne dialog for innsjekk',
+    'pantry.speed-dial.create-product.button.label': 'Åpne dialog for produkt',
     'common.action.save': 'Lagre',
     'common.action.cancel': 'Avbryt',
     'common.action.remove': 'Slett',
@@ -234,11 +252,21 @@ class LocalizationManager extends EventTarget {
     /**
      * Translate a key to the current locale. If the key is not found, it will return the key itself.
      * @param {TranslationKey} key - The key to translate.
+     * @param {string[]} [replacements] - An optional array of replacement strings to insert into the translated string.
      * @return {string} The translated string, or the key itself if not found.
      */
-    t(key) {
+    t(key, replacements) {
         const languageDictionary = translations[this._locale] || translations[LocalizationManager.DEFAULT_LOCALE];
-        return languageDictionary[key] || key;
+        let translation = languageDictionary[key] || key;
+
+        if (replacements) {
+            for(let i = 0; i < replacements.length; i++) {
+                const replacement = replacements[i];
+                translation = translation.replace(`{${i}}`, replacement);
+            }
+        }
+
+        return translation;
     }
 
     // noinspection JSUnusedGlobalSymbols

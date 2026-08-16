@@ -39,11 +39,11 @@ export class PantryApp extends HTMLElement {
         const speedDial = this.shadowRoot.querySelector('pantry-speed-dial');
         speedDial.actions = [{
             eventName: 'speed-dial-checkin',
-            buttonLabel: 'Open check-in dialog',
+            buttonLabel: i18n.t('pantry.speed-dial.checkin.button.label'),
             icon: '📦'
         }, {
             eventName: 'speed-dial-create-product',
-            buttonLabel: 'Open product dialog',
+            buttonLabel: i18n.t('pantry.speed-dial.create-product.button.label'),
             icon: '🛒'
         }];
 
@@ -72,7 +72,7 @@ export class PantryApp extends HTMLElement {
             this.notify(i18n.t('pantry.checkin.notification.item-checkin'), 'success', 3000);
         });
 
-        this.shadowRoot.addEventListener('item-checkout', async (event) => {
+        this.shadowRoot.addEventListener('item-withdraw', async (event) => {
             const { id, amount } = event.detail;
             await decrementPantryItemPackageQuantity(id, amount);
             await this.loadItems();
