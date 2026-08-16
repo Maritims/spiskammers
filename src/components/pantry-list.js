@@ -5,50 +5,59 @@ export class PantryList extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-        /** @type {Ingredient[]} */
-        this._items = [];
+        /** @type {ProductStock[]} */
+        this._productStock = [];
         this._filters = [];
     }
 
+    get productStock() {
+        return this._productStock;
+    }
+
     /**
-     * Sets the items to display in the list.
-     * @param {Ingredient[]} val
+     * @param {ProductStock[]} productStock
      */
-    set items(val) {
-        this._items = val || [];
+    set productStock(productStock) {
+        this._productStock = productStock || [];
         this.render();
     }
 
+    // noinspection JSUnusedGlobalSymbols
     set filter(val) {
         this._filters = val || [];
         this.render();
     }
 
-    get items() {
-        return this._items;
-    }
-
+    // noinspection JSUnusedGlobalSymbols
     connectedCallback() {
         this.render();
     }
 
     render() {
-        const filteredItems = this._filters.length === 0 ? this._items : this._items.filter(item => this._filters.includes(item.category));
+        /** @type {ProductStock[]} */
+        const filteredProductStock = this._filters.length === 0 ? this._productStock : [];//this._productStock.filter(item => this._filters.includes(item.category));
 
         this.shadowRoot.innerHTML = `
         <style>${styles}</style>
-        ${this._items.length === 0 ?
+        ${this.productStock.length === 0 ?
             `<div class="empty">No items found.</div>`
             :
-            filteredItems.map(item => `
-                <pantry-item
-                    item-id="${item.id}"
-                    name="${item.name}"
-                    package-quantity="${item.packageQuantity}"
-                    package-unit="${item.packageUnit}"
-                    base-quantity="${item.baseQuantity}"
-                    base-unit="${item.baseUnit}">
-                </pantry-item>`).join('')
+            filteredProductStock.map(productStock => {
+                const {product, stock} = productStock;
+                /** @type {number} */
+                const factor = product.packaging[stock.unit] || 1;
+                const totalBaseQuantity = factor * stock.quantity;
+
+                return `
+                    <pantry-item
+                        stock-id="${stock.id}"
+                        stock-quantity="${stock.quantity}"
+                        stock-unit="${stock.unit}"
+                        product-name="${product.name}"
+                        total-base-quantity="${totalBaseQuantity}"
+                        base-unit="${product.baseUnit}">
+                    </pantry-item>`
+            }).join('')
         }`;
     }
 }

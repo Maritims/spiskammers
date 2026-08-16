@@ -49,14 +49,14 @@ describe('PantryCheckinDialog', () => {
         const sut = document.createElement('pantry-checkin-dialog');
         sandbox.appendChild(sut);
 
-        const eanInput = sut.shadowRoot.querySelector('input[name="ean"]');
+        const eanInput = sut.shadowRoot.querySelector('input[name="gtin"]');
         let hasDispatchedBlurEvent = false;
         eanInput.addEventListener('blur', () => {
             hasDispatchedBlurEvent = true;
         });
 
         // act
-        sut.setEanValue('foobar');
+        sut.setGtinValue('foobar');
 
         // assert
         assertEquals('foobar', eanInput.value, () => `EAN input should have the expected value`);
@@ -71,7 +71,7 @@ describe('PantryCheckinDialog', () => {
         // act
         sut.products = [{
             name: 'Test Product',
-            ean: '0123456789',
+            gtin: '0123456789',
             packageQuantity: 1,
             packageUnit: 'kg',
             baseQuantity: 1,
@@ -93,7 +93,7 @@ describe('PantryCheckinDialog', () => {
 
         sut.products = [{
             name: 'Test Product',
-            ean: '0123456789',
+            gtin: '0123456789',
             packageQuantity: 1,
             packageUnit: 'kg',
             baseQuantity: 1,
@@ -101,7 +101,7 @@ describe('PantryCheckinDialog', () => {
         }];
 
         // act
-        sut.setEanValue('0123456789');
+        sut.setGtinValue('0123456789');
 
         // assert
         const nameInputEl = sut.shadowRoot.querySelector('input[name="name"]');

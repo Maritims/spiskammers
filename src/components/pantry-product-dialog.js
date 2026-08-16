@@ -1,7 +1,7 @@
 import styles from '../styles/stylesheet.css?inline';
 import {createMeasurementUnitOptionsAsHtml, createPackageUnitOptionsAsHtml} from "../units";
 import {i18n} from "../i18n";
-import {throwIfMissing} from "../shadow-helper";
+import {requireElementInShadowRoot} from "../helpers/argumentHelper";
 
 /**
  * @event PantryProductDialog#product-create
@@ -35,12 +35,12 @@ export class PantryProductDialog extends HTMLElement {
 
             /** @type {Product} */
             const productData = {
-                ean: formData.get('ean'),
+                gtin: formData.get('gtin'),
                 name: formData.get('name'),
                 packageQuantity: formData.get('packageQuantity'),
                 packageUnit: formData.get('packageUnit'),
                 baseQuantity: formData.get('baseQuantity'),
-                baseUnit: formData.get('baseUnit'),
+                baseUnit: formData.get('unit'),
             };
 
             const eventName = this.isEditing ? 'product-update' : 'product-create';
@@ -59,7 +59,7 @@ export class PantryProductDialog extends HTMLElement {
                 this.close();
             }
             if (event.target.id === 'delete-btn') {
-                const ean = this.shadowRoot.querySelector('input[name="ean"]').value;
+                const ean = this.shadowRoot.querySelector('input[name="gtin"]').value;
                 if (confirm(`Are you sure you want to delete this product?`)) {
                     this.dispatchEvent(new CustomEvent('product-delete', {
                         detail: {ean},
@@ -76,33 +76,37 @@ export class PantryProductDialog extends HTMLElement {
         return this.shadowRoot.querySelector('dialog').open;
     }
 
+    /**
+     * @param {Product | null} [product]
+     * @return {void}
+     */
     open(product = null) {
         this.isEditing = !!product;
         this.render();
 
         /** @type {HTMLDialogElement} */
-        const dialog = throwIfMissing(this.shadowRoot, 'dialog');
+        const dialog = requireElementInShadowRoot(this.shadowRoot, 'dialog');
 
         /** @type {HTMLInputElement} */
-        const eanInput = throwIfMissing(this.shadowRoot, 'input[name="ean"]');
+        const eanInput = requireElementInShadowRoot(this.shadowRoot, 'input[name="gtin"]');
 
         /** @type {HTMLInputElement} */
-        const nameInput = throwIfMissing(this.shadowRoot, 'input[name="name"]');
+        const nameInput = requireElementInShadowRoot(this.shadowRoot, 'input[name="name"]');
 
         /** @type {HTMLInputElement} */
-        const packageUnitInput = throwIfMissing(this.shadowRoot, 'input[name="packageUnit"]');
+        const packageUnitInput = requireElementInShadowRoot(this.shadowRoot, 'input[name="packageUnit"]');
 
         /** @type {HTMLInputElement} */
-        const packageQuantityInput = throwIfMissing(this.shadowRoot, 'input[name="packageQuantity"]');
+        const packageQuantityInput = requireElementInShadowRoot(this.shadowRoot, 'input[name="packageQuantity"]');
 
         /** @type {HTMLInputElement} */
-        const baseUnitInput = throwIfMissing(this.shadowRoot, 'input[name="baseUnit"]');
+        const baseUnitInput = requireElementInShadowRoot(this.shadowRoot, 'input[name="baseUnit"]');
 
         /** @type {HTMLInputElement} */
-        const baseQuantityInput = throwIfMissing(this.shadowRoot, 'input[name="baseQuantity"]');
+        const baseQuantityInput = requireElementInShadowRoot(this.shadowRoot, 'input[name="baseQuantity"]');
 
         if (product) {
-            eanInput.value = product.ean;
+            eanInput.value = product.gtin;
             eanInput.readOnly = true;
             nameInput.value = product.name;
             packageUnitInput.value = product.packageUnit;
@@ -132,8 +136,8 @@ export class PantryProductDialog extends HTMLElement {
                 <form method="dialog">
                     <h2>${this.isEditing ? i18n.t('pantry.product.title.edit') : i18n.t('pantry.product.title.create')}</h2>
                     <div class="field">
-                        <label for="ean">${i18n.t('pantry.product.ean.label')}</label>
-                        <input type="text" id="ean" name="ean" required>
+                        <label for="gtin">${i18n.t('pantry.product.ean.label')}</label>
+                        <input type="text" id="gtin" name="gtin" required>
                     </div>
                     <div class="field" style="padding-block-end: 1rem; border-bottom: 1px solid #ddd;">
                         <label for="name">${i18n.t('pantry.product.name.label')}</label>

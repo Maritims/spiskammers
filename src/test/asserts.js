@@ -44,7 +44,7 @@ export class VerifyEventError extends VerificationError {
      */
     constructor(eventName, expectedInvocations, actualInvocations, messageSupplier) {
         super(messageSupplier);
-        this.eventName = eventName;
+        this.action = eventName;
         this.expectedInvocations = expectedInvocations;
         this.actualInvocations = actualInvocations;
     }

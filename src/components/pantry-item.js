@@ -2,6 +2,10 @@ import commonStyles from '../styles/stylesheet.css?inline';
 import componentStyles from './pantry-item.css?inline';
 import {i18n} from "../i18n";
 
+/**
+ * A web component which displays a single pantry item.
+ * @element pantry-item
+ */
 export class PantryItem extends HTMLElement {
     constructor() {
         super();
@@ -17,53 +21,46 @@ export class PantryItem extends HTMLElement {
         this._onTouchEnd = this._onTouchEnd.bind(this);
     }
 
+    // noinspection JSUnusedGlobalSymbols
     static get observedAttributes() {
-        return ['item-id', 'name', 'package-quantity', 'package-unit', 'base-quantity', 'base-unit'];
+        return ['stock-id', 'stock-quantity', 'stock-unit', 'product-name', 'total-base-quantity', 'base-unit'];
     }
 
+    // noinspection JSUnusedGlobalSymbols
     attributeChangedCallback() {
         this.render();
     }
 
+    // noinspection JSUnusedGlobalSymbols
     connectedCallback() {
         this.render();
         this.shadowRoot.addEventListener('click', (event) => {
-            if (event.target.classList.contains('deposit')) {
-                const id = this.getAttribute('item-id');
-                const amount = Number(event.target.dataset.amount) || 1;
-                const name = this.getAttribute('name');
-                const packageUnit = this.getAttribute('package-unit');
+            if (event.target.classList.contains('deposit') || event.target.classList.contains('withdraw')) {
+                const stockId = Number(this.getAttribute('stock-id'));
+                const stockUnit = this.getAttribute('stock-unit');
+                const productName = this.getAttribute('product-name');
 
-                if (confirm(i18n.t('pantry.item.deposit-button.confirmation-message', [amount, packageUnit, name])) === false) {
+                if (confirm(i18n.t('pantry.item.deposit-button.confirmation-message', [1, stockUnit, productName])) === false) {
                     return;
                 }
 
                 this.resetSwipe();
 
-                this.dispatchEvent(new CustomEvent('item-deposit', {
-                    detail: {id, amount},
-                    bubbles: true,
-                    composed: true
-                }));
-            }
-
-            if (event.target.classList.contains('withdraw')) {
-                const id = this.getAttribute('item-id');
-                const amount = Number(event.target.dataset.amount) || 1;
-                const name = this.getAttribute('name');
-                const packageUnit = this.getAttribute('package-unit');
-
-                if (confirm(i18n.t('pantry.item.withdraw-button.confirmation-message', [amount, packageUnit, name])) === false) {
-                    return;
+                if (event.target.classList.contains('deposit')) {
+                    this.dispatchEvent(new CustomEvent('pantry-item-increment-stock', {
+                        detail: {stockId},
+                        bubbles: true,
+                        composed: true
+                    }));
+                } else if (event.target.classList.contains('withdraw')) {
+                    this.dispatchEvent(new CustomEvent('pantry-item-decrement-stock', {
+                        detail: {stockId},
+                        bubbles: true,
+                        composed: true
+                    }));
+                } else {
+                    throw new Error('Unknown button clicked');
                 }
-
-                this.resetSwipe();
-
-                this.dispatchEvent(new CustomEvent('item-withdraw', {
-                    detail: {id, amount},
-                    bubbles: true,
-                    composed: true
-                }));
             }
         });
 
@@ -73,14 +70,13 @@ export class PantryItem extends HTMLElement {
     }
 
     render() {
-        const name = this.getAttribute('name') || '';
-        const packageQuantity = this.getAttribute('package-quantity') || '';
-        const packageUnit = this.getAttribute('package-unit') || '';
-        const baseQuantity = this.getAttribute('base-quantity') || '';
+        const stockQuantity = this.getAttribute('stock-quantity') || '';
+        const stockUnit = this.getAttribute('stock-unit') || '';
+        const productName = this.getAttribute('product-name') || '';
+        const totalBaseQuantity = this.getAttribute('total-base-quantity') || '';
         const baseUnit = this.getAttribute('base-unit') || '';
 
-        const totalQuantity = Number(packageQuantity) * Number(baseQuantity);
-
+        // noinspection CssMissingComma
         this.shadowRoot.innerHTML = `
             <style>
                 ${commonStyles}
@@ -89,8 +85,8 @@ export class PantryItem extends HTMLElement {
             <div class="item-container">
                 <div class="info">
                     <div class="text-content">
-                        <span class="name">${name}</span>
-                        <span class="quantity">${totalQuantity} ${baseUnit} (${packageQuantity} ${packageUnit})</span>                    
+                        <span class="name">${productName}</span>
+                        <span class="quantity">${stockQuantity} ${stockUnit} (${totalBaseQuantity} ${baseUnit})</span>                    
                     </div>
                     <span class="swipe-hint" aria-hidden="true">‹</span>
                 </div>
@@ -112,7 +108,7 @@ export class PantryItem extends HTMLElement {
 
         /** @type {HTMLDivElement} */
         const actions = this.shadowRoot.querySelector('.actions');
-        if(actions) {
+        if (actions) {
             this._startTranslateX = this._isSwiped ? 0 : actions.offsetWidth;
         }
     }
@@ -147,7 +143,7 @@ export class PantryItem extends HTMLElement {
             const dx = this._currentX - this._startX;
             const rawTranslate = this._startTranslateX + dx;
 
-            if(rawTranslate < actionsWidth / 2) {
+            if (rawTranslate < actionsWidth / 2) {
                 actions.style.transform = 'translateX(0)';
                 this._isSwiped = true;
             } else {

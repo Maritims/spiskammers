@@ -57,6 +57,7 @@
  * | 'pantry.checkin.scan.barcode.label'
  * | 'pantry.checkin.notification.item-checkin'
  * | 'pantry.checkin.notification.item-checkout'
+ * | 'pantry.checkin.notification.item-checkout.error'
  * | 'pantry.speed-dial.checkin.button.label'
  * | 'pantry.speed-dial.create-product.button.label'
  * | 'common.action.save'
@@ -144,6 +145,7 @@ const englishTranslations = {
     'pantry.checkin.scan.barcode.label': 'Scan barcode',
     'pantry.checkin.notification.item-checkin': 'Item checked in successfully',
     'pantry.checkin.notification.item-checkout': 'Item checked out successfully',
+    'pantry.checkin.notification.item-checkout.error': 'Failed to check out item',
     'pantry.speed-dial.checkin.button.label': 'Open check-in dialog',
     'pantry.speed-dial.create-product.button.label': 'Open product dialog',
     'common.action.save': 'Save',
@@ -210,6 +212,7 @@ const norwegianTranslations = {
     'pantry.checkin.scan.barcode.label': 'Skann strekkode',
     'pantry.checkin.notification.item-checkin': 'Innhold sjekket inn',
     'pantry.checkin.notification.item-checkout': 'Innhold sjekket ut',
+    'pantry.checkin.notification.item-checkout.error': 'Kunne ikke gjøre uttak',
     'pantry.speed-dial.checkin.button.label': 'Åpne dialog for innsjekk',
     'pantry.speed-dial.create-product.button.label': 'Åpne dialog for produkt',
     'common.action.save': 'Lagre',

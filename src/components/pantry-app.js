@@ -6,104 +6,102 @@ import './pantry-toast';
 import './pantry-list';
 import './pantry-checkin-dialog';
 import './pantry-product-dialog';
-import {
-    addPantryItem,
-    addProduct,
-    decrementPantryItemPackageQuantity,
-    deleteProduct,
-    getAllProducts,
-    getPantryItems,
-    updateProduct
-} from "../db";
+
 import commonStyles from '../styles/stylesheet.css?inline';
 import componentStyles from './pantry-app.css?inline';
 import {i18n} from "../i18n";
+import {
+    addOrUpdateProduct, addOrUpdateStock,
+    decrementStock,
+    getPositiveProductStock,
+    incrementStock
+} from "../db/service";
+import {requirePositiveNumber} from "../helpers/argumentHelper";
 
 export class PantryApp extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-        /** @type {Ingredient[]} */
-        this.items = [];
-        /** @type {Product[]} */
-        this.products = [];
+        /** @type {ProductStock[]} */
+        this._productStock = [];
         this._onLanguageChange = () => this.render();
     }
 
+    // noinspection JSUnusedGlobalSymbols
     async connectedCallback() {
         i18n.addEventListener('languagechange', this._onLanguageChange);
-        await this.loadItems();
+        await this.loadProductStock();
         this.render();
 
         /** @type {PantrySpeedDial} */
         const speedDial = this.shadowRoot.querySelector('pantry-speed-dial');
         speedDial.actions = [{
-            eventName: 'speed-dial-checkin',
+            action: 'request-open-checkin-dialog',
             buttonLabel: i18n.t('pantry.speed-dial.checkin.button.label'),
             icon: '📦'
-        }, {
-            eventName: 'speed-dial-create-product',
-            buttonLabel: i18n.t('pantry.speed-dial.create-product.button.label'),
-            icon: '🛒'
         }];
 
-        this.shadowRoot.addEventListener('speed-dial-checkin', async () => {
-            await this.loadProducts();
-            const dialog = this.shadowRoot.querySelector('pantry-checkin-dialog');
-            if (dialog) {
-                dialog.products = this.products;
-                dialog.open();
-            }
-        });
+        this.shadowRoot.addEventListener('speed-dial-click',
+            /**
+             * @param {PantrySpeedDialEvent} event
+             * @return {Promise<void>}
+             */
+            async (event) => {
+                const action = event.action;
 
-        this.shadowRoot.addEventListener('speed-dial-create-product', () => {
-            const dialog = this.shadowRoot.querySelector('pantry-product-dialog');
-            if (dialog) {
-                dialog.open();
-            }
-        });
+                switch (action) {
+                    case 'request-open-checkin-dialog':
+                        await this.loadProductStock();
+                        const dialog = this.shadowRoot.querySelector('pantry-checkin-dialog');
+                        if (dialog) {
+                            dialog.products = this.products;
+                            dialog.open();
+                        }
+                        break;
+                    default:
+                        throw new Error(`Unknown action: ${action}`);
+                }
+            });
 
-        this.shadowRoot.addEventListener('item-checkin', async (event) => {
-            const newItem = event.detail;
-            await addPantryItem(newItem);
-            await this.loadItems();
+        this.shadowRoot.addEventListener('pantry-item-increment-stock', async (event) => {
+            const stockId = requirePositiveNumber(event.detail.stockId, 'event.detail.stockId');
+
+            await incrementStock(stockId);
+            await this.loadProductStock();
+
             this.updateList();
-
             this.notify(i18n.t('pantry.checkin.notification.item-checkin'), 'success', 3000);
         });
 
-        this.shadowRoot.addEventListener('item-withdraw', async (event) => {
-            const { id, amount } = event.detail;
-            await decrementPantryItemPackageQuantity(id, amount);
-            await this.loadItems();
-            this.updateList();
+        this.shadowRoot.addEventListener('pantry-item-decrement-stock', async (event) => {
+            const stockId = requirePositiveNumber(event.detail.stockId, 'event.detail.stockId');
 
+            try {
+                await decrementStock(stockId);
+            } catch (error) {
+                console.error(error);
+                this.notify(i18n.t('pantry.checkin.notification.item-checkout.error'), 'danger', -1);
+                return;
+            }
+
+            await this.loadProductStock();
+            this.updateList();
             this.notify(i18n.t('pantry.checkin.notification.item-checkout'), 'success', 3000);
         });
 
-        this.shadowRoot.addEventListener('product-create', async (event) => {
-            const newProduct = event.detail;
-            await addProduct(newProduct);
+        this.shadowRoot.addEventListener('pantry-checkin',
+            /** @param {PantryCheckinEvent} event */
+            async (event) => {
+                const productId = await addOrUpdateProduct(event.product);
+                await addOrUpdateStock(productId, event.unit, event.quantity);
+                await this.loadProductStock();
 
-            this.notify(i18n.t('pantry.product.notification.product-create'), 'success', 3000);
-        });
-
-        this.shadowRoot.addEventListener('product-update', async (event) => {
-            const updatedProduct = event.detail;
-            await updateProduct(updatedProduct);
-
-            this.notify(i18n.t('pantry.product.notification.product-update'), 'success', 3000);
-        });
-
-        this.shadowRoot.addEventListener('product-delete', async (event) => {
-            const ean = event.detail.ean;
-            await deleteProduct(ean);
-
-            this.notify(i18n.t('pantry.product.notification.product-delete'), 'success', 3000);
-        });
+                this.updateList();
+                this.notify(i18n.t('pantry.checkin.notification.item-checkin'), 'success', 3000);
+            });
 
         this.shadowRoot.addEventListener('category-filter', async (event) => {
-            const { categories } = event.detail;
+            const {categories} = event.detail;
             const listEl = this.shadowRoot.querySelector('pantry-list');
             if (listEl) {
                 listEl.filter = categories;
@@ -119,10 +117,11 @@ export class PantryApp extends HTMLElement {
 
         this.shadowRoot.addEventListener('barcode-scanned', async (event) => {
             const barcode = event.detail;
-            this.shadowRoot.querySelector('pantry-checkin-dialog').setEanValue(barcode);
+            this.shadowRoot.querySelector('pantry-checkin-dialog').setGtinValue(barcode);
         });
     }
 
+    // noinspection JSUnusedGlobalSymbols
     disconnectedCallback() {
         i18n.removeEventListener('languagechange', this._onLanguageChange);
     }
@@ -133,36 +132,31 @@ export class PantryApp extends HTMLElement {
         }));
     }
 
-    async loadItems() {
+    async loadProductStock() {
         try {
-            this.items = await getPantryItems();
-        } catch (error) {
-            console.error('Error loading pantry items:', error);
-        }
-    }
-
-    async loadProducts() {
-        try {
-            this.products = await getAllProducts();
+            this._productStock = await getPositiveProductStock();
         } catch (error) {
             console.error('Error loading products:', error);
         }
     }
 
     updateList() {
+        /** @type {PantryList} */
         const listEl = this.shadowRoot.querySelector('pantry-list');
+        /** @type {PantryFilter} */
         const filterEl = this.shadowRoot.querySelector('pantry-filter');
 
-        if(listEl) {
-            listEl.items = this.items;
+        if (listEl) {
+            listEl.productStock = this._productStock;
         }
 
         if (filterEl) {
-            filterEl.categories = [...new Set(this.items.map(item => item.category).filter(Boolean))];
+            //filterEl.categories = [...new Set(this.stock.map(item => item.category).filter(Boolean))];
         }
     }
 
     render() {
+        // noinspection CssMissingComma
         this.shadowRoot.innerHTML = `
         <style>
             ${commonStyles}
@@ -179,7 +173,6 @@ export class PantryApp extends HTMLElement {
         <pantry-speed-dial></pantry-speed-dial>
         <pantry-checkin-dialog></pantry-checkin-dialog>
         <pantry-scanner-dialog></pantry-scanner-dialog>
-        <pantry-product-dialog></pantry-product-dialog>
         <pantry-toast></pantry-toast>
         `;
         this.updateList();

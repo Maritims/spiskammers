@@ -3,10 +3,43 @@ import componentStyles from './pantry-speed-dial.css?inline';
 
 /**
  * @typedef {Object} SpeedDialAction
- * @property {string} eventName
- * @property {string} buttonLabel
- * @property {string} icon
+ * @property {string} action - The name of the action.
+ * @property {string} buttonLabel - The label for the action button.
+ * @property {string} icon - The icon for the action button.
  */
+
+/**
+ * @typedef {Object} SpeedDialClickEventDetail
+ * @property {string} action - The name of the action that was clicked.
+ */
+
+/**
+ * Custom event class for pantry speed dial events.
+ */
+export class PantrySpeedDialEvent extends CustomEvent {
+    /**
+     * @param {string} action - The name of the action that was clicked.
+     * @param {CustomEventInit<SpeedDialClickEventDetail>} [options] - Additional custom event options.
+     */
+    constructor(action, options) {
+        super('speed-dial-click', {
+            detail: {action},
+            ...options,
+            bubbles: true,
+            composed: true,
+        });
+    }
+
+    /**
+     * The name of the action that was clicked.
+     * @return {string}
+     */
+    get action() {
+        /** @type {SpeedDialClickEventDetail} */
+        const detail = this.detail;
+        return detail.action;
+    }
+}
 
 /**
  * A web component which displays a speed dial menu containing the following actions:
@@ -22,13 +55,6 @@ export class PantrySpeedDial extends HTMLElement {
     }
 
     /**
-     * @return {SpeedDialAction[]}
-     */
-    get actions() {
-        return this._actions;
-    }
-
-    /**
      * @param {SpeedDialAction[]} val
      * @return {void}
      */
@@ -37,6 +63,7 @@ export class PantrySpeedDial extends HTMLElement {
         this.render();
     }
 
+    // noinspection JSUnusedGlobalSymbols
     connectedCallback() {
         this.render();
 
@@ -53,17 +80,14 @@ export class PantrySpeedDial extends HTMLElement {
 
             const actionEl = event.target.closest('.action');
             if (actionEl) {
-                const eventName = actionEl.dataset.event;
-                if (!eventName) {
+                const action = actionEl.dataset.event;
+                if (!action) {
                     throw new Error(`Missing data-event attribute for action: ${actionEl.outerHTML}`);
                 }
 
                 this.close();
 
-                this.dispatchEvent(new CustomEvent(eventName, {
-                    bubbles: true,
-                    composed: true
-                }));
+                this.dispatchEvent(new PantrySpeedDialEvent(action));
             }
         });
     }
@@ -80,6 +104,7 @@ export class PantrySpeedDial extends HTMLElement {
     }
 
     render() {
+        // noinspection CssMissingComma
         this.shadowRoot.innerHTML = `
             <style>
                 ${styles}
@@ -89,7 +114,7 @@ export class PantrySpeedDial extends HTMLElement {
                 <button class="trigger" aria-expanded="false" aria-label="Open the speed dial menu">➕</button>
                 <div class="actions">
                     ${this._actions.map(action => `
-                        <button data-event="${action.eventName}" class="action" aria-label="${action.buttonLabel}">
+                        <button data-event="${action.action}" class="action" aria-label="${action.buttonLabel}">
                             <span class="icon">${action.icon}</span>
                             <span class="label">${action.buttonLabel}</span>
                         </button>

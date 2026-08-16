@@ -5,6 +5,46 @@ import {
 } from "../units";
 import {i18n} from "../i18n";
 
+export class PantryCheckinEvent extends CustomEvent {
+    /**
+     * @param {Product} product
+     * @param {keyof PackagingMap} unit
+     * @param {number} quantity
+     */
+    constructor(product, unit, quantity) {
+        super('pantry-checkin', {
+            detail: {
+                product,
+                unit,
+                quantity
+            },
+            bubbles: true,
+            composed: true
+        });
+    }
+
+    /**
+     * @return {Product}
+     */
+    get product() {
+        return this.detail.product;
+    }
+
+    /**
+     * @return {keyof PackagingMap}
+     */
+    get unit() {
+        return this.detail.unit;
+    }
+
+    /**
+     * @return {number}
+     */
+    get quantity() {
+        return this.detail.quantity;
+    }
+}
+
 export class PantryCheckinDialog extends HTMLElement {
     constructor() {
         super();
@@ -26,62 +66,55 @@ export class PantryCheckinDialog extends HTMLElement {
         return this._products;
     }
 
-    setEanValue(ean) {
-        const eanInput = this.shadowRoot.querySelector('input[name="ean"]');
-        if (eanInput) {
-            eanInput.value = ean;
-            eanInput.dispatchEvent(new Event('blur', {bubbles: true}));
+    setGtinValue(gtin) {
+        const gtinInput = this.shadowRoot.querySelector('input[name="gtin"]');
+        if (gtinInput) {
+            gtinInput.value = gtin;
+            gtinInput.dispatchEvent(new Event('blur', {bubbles: true}));
         }
     }
 
+    // noinspection JSUnusedGlobalSymbols
     connectedCallback() {
         this.render();
 
-        const eanInput = this.shadowRoot.querySelector('input[name="ean"]');
-        if (eanInput) {
-            eanInput.addEventListener('blur', (event) => {
-                const ean = event.target.value;
-                if (!ean) {
+        const gtinInput = this.shadowRoot.querySelector('input[name="gtin"]');
+        if (gtinInput) {
+            gtinInput.addEventListener('blur', (event) => {
+                const gtin = event.target.value;
+                if (!gtin) {
                     return;
                 }
 
-                const product = this._products.find(p => p.ean === ean);
+                const product = this._products.find(p => p.gtin === gtin);
                 if (product) {
                     this.shadowRoot.querySelector('input[name="name"]').value = product.name;
-                    this.shadowRoot.querySelector('input[name="packageUnit"]').value = product.packageUnit;
-                    this.shadowRoot.querySelector('input[name="baseQuantity"]').value = product.baseQuantity;
                     this.shadowRoot.querySelector('input[name="baseUnit"]').value = product.baseUnit;
                 }
             });
         }
-
-        this.shadowRoot.querySelector('input[name="packageUnit"]').addEventListener('change', (event) => {
-            /** @type {HTMLInputElement} */
-            const inputEl = event.target;
-            /** @type {HTMLDataListElement} */
-            const datalistEl = this.shadowRoot.querySelector(`datalist#${inputEl.getAttribute('list')}`);
-            const isValid = [...datalistEl.options].map(option => option.value).includes(event.target.value);
-            event.target.setCustomValidity(isValid ? '' : i18n.t('foo.bar'));
-        });
 
         this.shadowRoot.addEventListener('submit', (event) => {
             event.preventDefault();
             const form = event.target;
             const formData = new FormData(form);
 
-            const newData = {
-                name: formData.get('name'),
-                packageQuantity: formData.get('packageQuantity'),
-                packageUnit: formData.get('packageUnit'),
-                baseQuantity: formData.get('baseQuantity'),
-                baseUnit: formData.get('baseUnit'),
-            };
+            const gtin = formData.get('gtin');
+            const name = formData.get('name');
+            const baseUnit = formData.get('baseUnit');
+            const baseQuantity = formData.get('baseQuantity');
+            const packageUnit = formData.get('packageUnit');
+            const packageQuantity = Number(formData.get('packageQuantity'));
+            const factor = packageQuantity / baseQuantity;
 
-            this.dispatchEvent(new CustomEvent('item-checkin', {
-                detail: newData,
-                bubbles: true,
-                composed: true
-            }));
+            this.dispatchEvent(new PantryCheckinEvent({
+                gtin,
+                name,
+                baseUnit,
+                packaging: {
+                    [packageUnit]: factor
+                }
+            }, packageUnit, packageQuantity));
 
             form.reset();
             this.close();
@@ -123,7 +156,7 @@ export class PantryCheckinDialog extends HTMLElement {
         /** @type {HTMLDataListElement} */
         const datalist = this.shadowRoot.querySelector('#product-list');
         if (datalist) {
-            datalist.innerHTML = this._products.map(product => `<option value="${product.ean}">${product.name}</option>`).join('');
+            datalist.innerHTML = this._products.map(product => `<option value="${product.gtin}">${product.name}</option>`).join('');
         }
     }
 
@@ -134,9 +167,9 @@ export class PantryCheckinDialog extends HTMLElement {
                 <form method="dialog">
                     <h2>${i18n.t('pantry.checkin.title')}</h2>
                     <div class="field">
-                        <label for="ean">${i18n.t('pantry.checkin.ean.label')}</label>
-                        <input type="text" id="ean" name="ean" list="product-list" pattern="^[0-9]{13}$">
-                        <datalist id="product-list">${this._products.map(product => `<option value="${product.ean}">${product.code}</option>`).join('')}</datalist>
+                        <label for="gtin">${i18n.t('pantry.checkin.ean.label')}</label>
+                        <input type="text" id="gtin" name="gtin" list="product-list" pattern="^[0-9]{13}$">
+                        <datalist id="product-list">${this._products.map(product => `<option value="${product.gtin}">${product.name}</option>`).join('')}</datalist>
                     </div>
                     <div class="field">
                         <label for="name">${i18n.t('pantry.checkin.name.label')}</label>

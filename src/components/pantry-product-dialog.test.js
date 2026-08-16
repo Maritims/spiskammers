@@ -36,7 +36,7 @@ describe('PantryProductDialog', () => {
         sut.open();
         const form = sut.shadowRoot.querySelector('form');
 
-        form.querySelector('input[name="ean"]').value = '0123456789';
+        form.querySelector('input[name="gtin"]').value = '0123456789';
         form.querySelector('input[name="name"]').value = 'Test Product';
         form.querySelector('input[name="packageQuantity"]').valueAsNumber = 10;
         form.querySelector('input[name="packageUnit"]').value = 'kg';
@@ -80,7 +80,7 @@ describe('PantryProductDialog', () => {
 
         // act
         dialogEl.open();
-        const eanInputEl = dialogEl.shadowRoot.querySelector('input[name="ean"]');
+        const eanInputEl = dialogEl.shadowRoot.querySelector('input[name="gtin"]');
         const actual = eanInputEl.value;
 
         // assert
@@ -165,7 +165,7 @@ describe('PantryProductDialog', () => {
             baseQuantity: anyNumber(),
             baseUnit: anyString()
         });
-        const eanInputEl = dialogEl.shadowRoot.querySelector('input[name="ean"]');
+        const eanInputEl = dialogEl.shadowRoot.querySelector('input[name="gtin"]');
         const actual = eanInputEl.value;
 
         // assert

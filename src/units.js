@@ -98,7 +98,7 @@ export const MEASUREMENT_UNITS = Object.freeze({
 export function convertMeasurementUnit(value, fromUnitName, toUnitName) {
     const findUnit = (str) => {
         const normalizedStr = str.toLowerCase();
-        return Object.values(MEASUREMENT_UNITS).find(measurementUnit => measurementUnit.code === normalizedStr || measurementUnit.abbreviation === normalizedStr);
+        return Object.values(MEASUREMENT_UNITS).find(measurementUnit => measurementUnit.code === normalizedStr || measurementUnit.code === normalizedStr);
     }
 
     const fromUnit = findUnit(fromUnitName);
