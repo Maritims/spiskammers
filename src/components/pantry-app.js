@@ -22,12 +22,27 @@ export class PantryApp extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-        /** @type {ProductStock[]} */
+
+        /**
+         * The product stock to render in the pantry list.
+         * @type {ProductStock[]}
+         * @private
+         */
         this._productStock = [];
+
+        /**
+         * The action to be performed when the language changes.
+         * @private
+         */
         this._onLanguageChange = () => this.render();
     }
 
     // noinspection JSUnusedGlobalSymbols
+    /**
+     * @listens PantryItem#event:IncrementStock
+     * @listens PantryItem#event:DecrementStock
+     * @return {Promise<void>}
+     */
     async connectedCallback() {
         i18n.addEventListener('languagechange', this._onLanguageChange);
         await this.loadProductStock();
@@ -63,31 +78,35 @@ export class PantryApp extends HTMLElement {
                 }
             });
 
-        this.shadowRoot.addEventListener('pantry-item-increment-stock', async (event) => {
-            const stockId = requirePositiveNumber(event.detail.stockId, 'event.detail.stockId');
+        this.shadowRoot.addEventListener('increment-stock',
+            /** @param {UpdateStockEvent} event */
+            async (event) => {
+                const stockId = requirePositiveNumber(event.detail.stockId, 'event.detail.stockId');
 
-            await incrementStock(stockId);
-            await this.loadProductStock();
+                await incrementStock(stockId);
+                await this.loadProductStock();
 
-            this.updateList();
-            this.notify(i18n.t('pantry.checkin.notification.item-checkin'), 'success', 3000);
-        });
+                this.updateList();
+                this.notify(i18n.t('pantry.checkin.notification.item-checkin'), 'success', 3000);
+            });
 
-        this.shadowRoot.addEventListener('pantry-item-decrement-stock', async (event) => {
-            const stockId = requirePositiveNumber(event.detail.stockId, 'event.detail.stockId');
+        this.shadowRoot.addEventListener('decrement-stock',
+            /** @param {UpdateStockEvent} event */
+            async (event) => {
+                const stockId = requirePositiveNumber(event.detail.stockId, 'event.detail.stockId');
 
-            try {
-                await decrementStock(stockId);
-            } catch (error) {
-                console.error(error);
-                this.notify(i18n.t('pantry.checkin.notification.item-checkout.error'), 'danger', -1);
-                return;
-            }
+                try {
+                    await decrementStock(stockId);
+                } catch (error) {
+                    console.error(error);
+                    this.notify(i18n.t('pantry.checkin.notification.item-checkout.error'), 'danger', -1);
+                    return;
+                }
 
-            await this.loadProductStock();
-            this.updateList();
-            this.notify(i18n.t('pantry.checkin.notification.item-checkout'), 'success', 3000);
-        });
+                await this.loadProductStock();
+                this.updateList();
+                this.notify(i18n.t('pantry.checkin.notification.item-checkout'), 'success', 3000);
+            });
 
         this.shadowRoot.addEventListener('pantry-checkin',
             /** @param {PantryCheckinEvent} event */
@@ -132,6 +151,11 @@ export class PantryApp extends HTMLElement {
         }));
     }
 
+    /**
+     * Retrieves all product stock with a positive quantity.
+     * @async
+     * @return {Promise<void>}
+     */
     async loadProductStock() {
         try {
             this._productStock = await getPositiveProductStock();
@@ -140,6 +164,9 @@ export class PantryApp extends HTMLElement {
         }
     }
 
+    /**
+     * Updates the pantry list with the current product stock.
+     */
     updateList() {
         /** @type {PantryList} */
         const listEl = this.shadowRoot.querySelector('pantry-list');

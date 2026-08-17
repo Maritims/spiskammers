@@ -3,7 +3,28 @@ import componentStyles from './pantry-item.css?inline';
 import {i18n} from "../i18n";
 
 /**
- * A web component which displays a single pantry item.
+ * @typedef {CustomEvent<{stockId: number}>} UpdateStockEvent
+ * @property {number} detail.stockId - The ID of the stock to update.
+ */
+
+/**
+ * Dispatched when a stock increase is requested.
+ *
+ * @event PantryItem#IncrementStock
+ * @type {UpdateStockEvent}
+ */
+
+/**
+ * Dispatched when a stock decrease is requested.
+ *
+ * @event PantryItem#DecrementStock
+ * @type {UpdateStockEvent}
+ */
+
+/**
+ * A web component which displays a single pantry item. It includes a name, quantity, and buttons for incrementing and decrementing the quantity.
+ * Supports swiping on smaller screens to reveal item actions.
+ *
  * @element pantry-item
  */
 export class PantryItem extends HTMLElement {
@@ -11,9 +32,35 @@ export class PantryItem extends HTMLElement {
         super();
         this.attachShadow({mode: 'open'});
 
+        /**
+         * Horizontal starting point for a swipe action.
+         *
+         * @private
+         * @type {number}
+         */
         this._startX = 0;
+
+        /**
+         * Current horizontal position during a swipe action.
+
+         * @type {number}
+         * @private
+         */
         this._currentX = 0;
+
+        /**
+         * Translated horizontal starting for a swipe action.
+         *
+         * @type {number}
+         * @private
+         */
         this._startTranslateX = 0;
+
+        /**
+         * Current swipe state.
+         * @type {boolean}
+         * @private
+         */
         this._isSwiped = false;
 
         this._onTouchStart = this._onTouchStart.bind(this);
@@ -32,6 +79,10 @@ export class PantryItem extends HTMLElement {
     }
 
     // noinspection JSUnusedGlobalSymbols
+    /**
+     * @fires PantryItem#IncrementStock - Dispatched when the deposit button is clicked.
+     * @fires PantryItem#DecrementStock - Dispatched when the withdraw button is clicked.
+     */
     connectedCallback() {
         this.render();
         this.shadowRoot.addEventListener('click', (event) => {
@@ -47,13 +98,13 @@ export class PantryItem extends HTMLElement {
                 this.resetSwipe();
 
                 if (event.target.classList.contains('deposit')) {
-                    this.dispatchEvent(new CustomEvent('pantry-item-increment-stock', {
+                    this.dispatchEvent(new CustomEvent('increment-stock', {
                         detail: {stockId},
                         bubbles: true,
                         composed: true
                     }));
                 } else if (event.target.classList.contains('withdraw')) {
-                    this.dispatchEvent(new CustomEvent('pantry-item-decrement-stock', {
+                    this.dispatchEvent(new CustomEvent('decrement-stock', {
                         detail: {stockId},
                         bubbles: true,
                         composed: true
@@ -99,6 +150,8 @@ export class PantryItem extends HTMLElement {
     }
 
     /**
+     * Initiates a swipe action.
+     *
      * @param {TouchEvent} event
      * @private
      */
@@ -114,6 +167,8 @@ export class PantryItem extends HTMLElement {
     }
 
     /**
+     * Tracks a swipe action.
+     *
      * @param {TouchEvent} event
      * @private
      */
@@ -133,6 +188,8 @@ export class PantryItem extends HTMLElement {
     }
 
     /**
+     * Ends a swipe action.
+     *
      * @private
      */
     _onTouchEnd() {
@@ -153,6 +210,9 @@ export class PantryItem extends HTMLElement {
         }
     }
 
+    /**
+     * Resets the swipe state and move the actions back to their starting position.
+     */
     resetSwipe() {
         const actions = this.shadowRoot.querySelector('.actions');
         if (actions) {
